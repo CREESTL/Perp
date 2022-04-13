@@ -54,6 +54,120 @@ contract Oracle {
 
 	// Methods
 
+	function settleStopOrders(
+		address[] calldata users,
+		bytes32[] calldata productIds,
+		address[] calldata currencies,
+		bool[] calldata directions,
+		uint256[] calldata stops
+	) external onlyDarkOracle {
+		for (uint256 i = 0; i < users.length; i++) {
+			address user = users[i];
+			bytes32 productId = productIds[i];
+			address currency = currencies[i];
+			bool isLong = directions[i];
+
+			try ITrading(trading).settleStopOrder(user, productId, currency, isLong, stops[i]) {
+
+			} catch Error(string memory reason) {
+				emit SettlementError(
+					user,
+					currency,
+					productId,
+					isLong,
+					reason
+				);
+		}
+		}
+	}
+
+	function settleTakeOrders(
+		address[] calldata users,
+		bytes32[] calldata productIds,
+		address[] calldata currencies,
+		bool[] calldata directions,
+		uint256[] calldata takes
+	) external onlyDarkOracle {
+		for (uint256 i = 0; i < users.length; i++) {
+			address user = users[i];
+			bytes32 productId = productIds[i];
+			address currency = currencies[i];
+			bool isLong = directions[i];
+
+			try ITrading(trading).settleTakeOrder(user, productId, currency, isLong, takes[i]) {
+
+			} catch Error(string memory reason) {
+				emit SettlementError(
+					user,
+					currency,
+					productId,
+					isLong,
+					reason
+				);
+		}
+		}
+	}
+
+	// function setLimits(
+	// 	address[] calldata users,
+	// 	bytes32[] calldata productIds,
+	// 	address[] calldata currencies,
+	// 	bool[] calldata directions,
+	// 	uint256[] calldata stops,
+	// 	uint256[] calldata takes
+	// ) external onlyDarkOracle {
+	// 	for (uint256 i = 0; i < users.length; i++) {
+	// 		address user = users[i];
+	// 		bytes32 productId = productIds[i];
+	// 		address currency = currencies[i];
+	// 		bool isLong = directions[i];
+
+	// 		_setStop(user, productId, currency, isLong, stops[i]);
+	// 		_setTake(user, productId, currency, isLong, takes[i]);
+	// 	}
+	// }
+
+
+	// function _setStop(
+	// 	address user,
+	// 	bytes32 productId,
+	// 	address currency,
+	// 	bool isLong,
+	// 	uint256 stop
+	// ) private {
+		// try ITrading(trading).setStop(user, productId, currency, isLong, stop) {
+
+		// } catch Error(string memory reason) {
+		// 	emit SettlementError(
+		// 		user,
+		// 		currency,
+		// 		productId,
+		// 		isLong,
+		// 		reason
+		// 	);
+		// }
+	// }
+
+	// function _setTake(
+	// 	address user,
+	// 	bytes32 productId,
+	// 	address currency,
+	// 	bool isLong,
+	// 	uint256 take
+	// ) private {
+	// 	try ITrading(trading).setTake(user, productId, currency, isLong, take) {
+
+	// 	} catch Error(string memory reason) {
+	// 		emit SettlementError(
+	// 			user,
+	// 			currency,
+	// 			productId,
+	// 			isLong,
+	// 			reason
+	// 		);
+	// 	}
+	// }
+
 	function settleOrders(
 		address[] calldata users,
 		bytes32[] calldata productIds,

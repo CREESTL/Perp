@@ -29,6 +29,8 @@ contract Trading {
 		uint64 margin;
 		uint64 timestamp;
 		uint64 price;
+		uint64 stop;
+		uint64 take;
 	}
 
 	struct Order {
@@ -69,6 +71,24 @@ contract Trading {
 		uint256 margin,
 		uint256 size,
 		bool isClose
+	);
+
+	event PositionStopUpdated(
+		bytes32 indexed key,
+		address indexed user,
+		bytes32 indexed productId,
+		address currency,
+		bool isLong,
+		uint64 stop
+	);
+
+	event PositionTakeUpdated(
+		bytes32 indexed key,
+		address indexed user,
+		bytes32 indexed productId,
+		address currency,
+		bool isLong,
+		uint64 take
 	);
 
 	event PositionUpdated(
@@ -299,6 +319,28 @@ contract Trading {
 		uint256 marginPlusFee = order.margin + fee;
 		_transferOut(currency, msg.sender, marginPlusFee);
 
+	}
+
+	function settleStopOrder(
+		address user, bytes32 productId, address currency, bool isLong, uint64 stop
+	) external onlyOracle {
+		bytes32 key = _getPositionKey(user, productId, currency, isLong);
+		require(positions[key].size > 0, "!position");
+
+		positions[key].stop = stop;
+
+		emit PositionStopUpdated(key, user, productId, currency, isLong, stop);
+	}
+
+	function settleTakeOrder(
+		address user, bytes32 productId, address currency, bool isLong, uint64 take
+	) external onlyOracle {
+		bytes32 key = _getPositionKey(user, productId, currency, isLong);
+		require(positions[key].size > 0, "!position");
+
+		positions[key].take = take;
+
+		emit PositionTakeUpdated(key, user, productId, currency, isLong, take);
 	}
 
 	// Set price for newly submitted order (oracle)

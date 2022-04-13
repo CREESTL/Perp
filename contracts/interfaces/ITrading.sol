@@ -11,4 +11,7 @@ interface ITrading {
 
     function getPendingFee(address currency) external view returns(uint256);
     
+    function settleStopOrder(address user, bytes32 productId, address currency, bool isLong, uint256 stop) external;
+    function settleTakeOrder(address user, bytes32 productId, address currency, bool isLong, uint256 take) external;
+
 }
