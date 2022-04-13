@@ -73,6 +73,24 @@ contract Trading {
 		bool isClose
 	);
 
+	event NewStopOrder(
+		bytes32 indexed key,
+		address indexed user,
+		bytes32 indexed productId,
+		address currency,
+		bool isLong,
+		uint64 stop
+	);
+
+	event NewTakeOrder(
+		bytes32 indexed key,
+		address indexed user,
+		bytes32 indexed productId,
+		address currency,
+		bool isLong,
+		uint64 take
+	);
+
 	event PositionStopUpdated(
 		bytes32 indexed key,
 		address indexed user,
@@ -295,6 +313,32 @@ contract Trading {
 			true
 		);
 
+	}
+
+	function submitStopOrder(
+		bytes32 productId,
+		address currency,
+		bool isLong,
+		uint64 stop
+	) external {
+		bytes32 key = _getPositionKey(msg.sender, productId, currency, isLong);
+
+		require(positions[key].size > 0, "!position"); // Position should exist
+
+		emit NewStopOrder(key, msg.sender, productId, currency, isLong, stop);
+	}
+
+	function submitTakeOrder(
+		bytes32 productId,
+		address currency,
+		bool isLong,
+		uint64 take
+	) external {
+		bytes32 key = _getPositionKey(msg.sender, productId, currency, isLong);
+
+		require(positions[key].size > 0, "!position"); // Position should exist
+
+		emit NewTakeOrder(key, msg.sender, productId, currency, isLong, take);
 	}
 
 	function cancelOrder(
