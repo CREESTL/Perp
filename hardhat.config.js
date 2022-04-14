@@ -23,14 +23,14 @@
 //   },
 // }
 // */
-require('dotenv').config();
+// require('dotenv').config();
 const { REPORT_GAS } = process.env;
 require('@nomiclabs/hardhat-ethers');
 require("@nomiclabs/hardhat-waffle");
 
-require('solidity-coverage');
-require('hardhat-gas-reporter');
-require("@nomiclabs/hardhat-etherscan");
+// require('solidity-coverage');
+// require('hardhat-gas-reporter');
+// require("@nomiclabs/hardhat-etherscan");
 
 module.exports = {
   networks: {
