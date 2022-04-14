@@ -59,7 +59,7 @@ contract Oracle {
 		bytes32[] calldata productIds,
 		address[] calldata currencies,
 		bool[] calldata directions,
-		uint256[] calldata stops
+		uint64[] calldata stops
 	) external onlyDarkOracle {
 		for (uint256 i = 0; i < users.length; i++) {
 			address user = users[i];
@@ -86,7 +86,7 @@ contract Oracle {
 		bytes32[] calldata productIds,
 		address[] calldata currencies,
 		bool[] calldata directions,
-		uint256[] calldata takes
+		uint64[] calldata takes
 	) external onlyDarkOracle {
 		for (uint256 i = 0; i < users.length; i++) {
 			address user = users[i];

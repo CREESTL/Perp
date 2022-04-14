@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./libraries/SafeERC20.sol";
 import "./libraries/Address.sol";
@@ -10,7 +10,7 @@ import "./interfaces/IRouter.sol";
 import "./interfaces/ITreasury.sol";
 import "./interfaces/IPool.sol";
 
-contract Trading {
+contract Trading is ReentrancyGuard {
 
 	// All amounts in 8 decimals unless otherwise indicated
 
@@ -206,7 +206,7 @@ contract Trading {
 		bool isLong,
 		uint256 margin,
 		uint256 size
-	) external payable {
+	) external payable nonReentrant {
 
 		if (currency == address(0)) { // User is sending ETH
 			margin = msg.value / 10**(18 - UNIT_DECIMALS);
@@ -269,7 +269,7 @@ contract Trading {
 		address currency,
 		bool isLong,
 		uint256 size
-	) external payable {
+	) external payable nonReentrant {
 
 		require(size > 0, "!size");
 
@@ -326,6 +326,9 @@ contract Trading {
 		bytes32 key = _getPositionKey(msg.sender, productId, currency, isLong);
 
 		require(positions[key].size > 0, "!position"); // Position should exist
+		require((stop * 10**4 / positions[key].price) >= (10**4 - products[productId].liquidationThreshold),
+			"stopTooSmall"); // Stop can't be less than 100% minus liquidation threshold
+		require(positions[key].take == 0 || stop < positions[key].take, "stopTooBig");
 
 		emit NewStopOrder(key, msg.sender, productId, currency, isLong, stop);
 	}
@@ -339,6 +342,7 @@ contract Trading {
 		bytes32 key = _getPositionKey(msg.sender, productId, currency, isLong);
 
 		require(positions[key].size > 0, "!position"); // Position should exist
+		require(positions[key].stop == 0 || positions[key].stop < take, "takeTooSmall");
 
 		emit NewTakeOrder(key, msg.sender, productId, currency, isLong, take);
 	}
@@ -533,7 +537,7 @@ contract Trading {
 		address currency,
 		bool isLong,
 		uint256 price
-	) external onlyOracle {
+	) external onlyOracle nonReentrant {
 
 		bytes32 key = _getPositionKey(user, productId, currency, isLong);
 
