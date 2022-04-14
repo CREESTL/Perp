@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 import "./libraries/SafeERC20.sol";
 import "./libraries/Address.sol";
 
 import "./interfaces/IRouter.sol";
 import "./interfaces/IRewards.sol";
 
-contract Pool {
+contract Pool is ReentrancyGuard {
 
 	using SafeERC20 for IERC20; 
     using Address for address payable;
@@ -94,7 +96,7 @@ contract Pool {
 
 	// Methods
 
-	function deposit(uint256 amount) external payable {
+	function deposit(uint256 amount) external payable nonReentrant {
 
 		uint256 lastBalance = _getCurrentBalance();
 
