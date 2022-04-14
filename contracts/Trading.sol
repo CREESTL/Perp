@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 import "./libraries/SafeERC20.sol";
 import "./libraries/Address.sol";
 
@@ -381,7 +383,7 @@ contract Trading {
 	) external onlyOracle {
 		bytes32 key = _getPositionKey(user, productId, currency, isLong);
 		require(positions[key].size > 0, "!position");
-
+		
 		positions[key].take = take;
 
 		emit PositionTakeUpdated(key, user, productId, currency, isLong, take);
