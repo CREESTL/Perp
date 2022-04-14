@@ -324,6 +324,9 @@ contract Trading {
 		bytes32 key = _getPositionKey(msg.sender, productId, currency, isLong);
 
 		require(positions[key].size > 0, "!position"); // Position should exist
+		require((stop * 10**4 / positions[key].price) >= (10**4 - products[productId].liquidationThreshold),
+			"stopTooSmall"); // Stop can't be less than 100% minus liquidation threshold
+		require(positions[key].take == 0 || stop < positions[key].take, "stopTooBig");
 
 		emit NewStopOrder(key, msg.sender, productId, currency, isLong, stop);
 	}
@@ -337,6 +340,7 @@ contract Trading {
 		bytes32 key = _getPositionKey(msg.sender, productId, currency, isLong);
 
 		require(positions[key].size > 0, "!position"); // Position should exist
+		require(positions[key].stop == 0 || positions[key].stop < take, "takeTooSmall");
 
 		emit NewTakeOrder(key, msg.sender, productId, currency, isLong, take);
 	}
