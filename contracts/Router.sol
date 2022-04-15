@@ -73,11 +73,11 @@ contract Router {
 
 	// Setters
 
-	function setCurrencies(address[] calldata _currencies) external onlyOwner {
+	function setCurrencies(address[] calldata _currencies) external onlyOwnerOrFactory {
 		currencies = _currencies;
 	}
 
-	function setDecimals(address currency, uint8 _decimals) external onlyOwner {
+	function setDecimals(address currency, uint8 _decimals) external onlyOwnerOrFactory {
 		decimals[currency] = _decimals;
 	}
 
@@ -87,7 +87,7 @@ contract Router {
 		address _capPool,
 		address _oracle,
 		address _darkOracle
-	) external onlyOwner {
+	) external onlyOwnerOrFactory {
 		treasury = _treasury;
 		trading = _trading;
 		capPool = _capPool;
@@ -95,37 +95,40 @@ contract Router {
 		darkOracle = _darkOracle;
 	}
 
-	function setPool(address currency, address _contract) external onlyOwner {
+	function setPool(address currency, address _contract) external onlyOwnerOrFactory {
 		pools[currency] = _contract;
 	}
 
-	function setPoolShare(address currency, uint256 share) external onlyOwner {
+	function setPoolShare(address currency, uint256 share) external onlyOwnerOrFactory {
 		poolShare[currency] = share;
 	}
-	function setCapShare(address currency, uint256 share) external onlyOwner {
+	function setCapShare(address currency, uint256 share) external onlyOwnerOrFactory {
 		capShare[currency] = share;
 	}
 
-	function setPoolRewards(address currency, address _contract) external onlyOwner {
+	function setPoolRewards(address currency, address _contract) external onlyOwnerOrFactory {
 		poolRewards[currency] = _contract;
 	}
 
-	function setCapRewards(address currency, address _contract) external onlyOwner {
+	function setCapRewards(address currency, address _contract) external onlyOwnerOrFactory {
 		capRewards[currency] = _contract;
 	}
 
-	function setOwner(address newOwner) external onlyOwner {
+	function setOwner(address newOwner) external onlyOwnerOrFactory {
 		owner = newOwner;
 	}
 
-	function addCurrency(address _currency) external onlyOwner {
+	function addCurrency(address _currency) external onlyOwnerOrFactory {
+		for(uint256 i; i < currencies.length; i++) {
+			require(currencies[i] != _currency, "currencyAdded");
+		}
 		currencies.push(_currency);
 	}
 
 	// Modifiers
 
-	modifier onlyOwner() {
-		require(msg.sender == owner || msg.sender == factory, "!owner");
+	modifier onlyOwnerOrFactory() {
+		require(msg.sender == owner || msg.sender == factory, "!ownerOrFactory");
 		_;
 	}
 
