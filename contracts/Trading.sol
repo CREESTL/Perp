@@ -189,8 +189,6 @@ contract Trading {
 		if (currency == address(0)) {
 			require(margin > fee, "!margin<fee");
 			margin -= fee;
-		} else {
-			_transferIn(currency, margin + fee);
 		}
 
 		require(margin >= minMargin[currency], "!min-margin");
@@ -210,6 +208,10 @@ contract Trading {
 			size: uint64(size),
 			margin: uint64(margin)
 		});
+
+		if(currency != address(0)) {
+			_transferIn(currency, margin + fee);
+		}
 
 		emit NewOrder(
 			key,
@@ -252,8 +254,6 @@ contract Trading {
 		if (currency == address(0)) {
 			uint256 fee_units = fee * 10**(18-UNIT_DECIMALS);
 			require(msg.value >= fee_units && msg.value <= fee_units * (10**6 + 1)/10**6, "!fee");
-		} else {
-			_transferIn(currency, fee);
 		}
 
 		uint256 margin = size * uint256(position.margin) / uint256(position.size);
@@ -263,6 +263,10 @@ contract Trading {
 			size: uint64(size),
 			margin: uint64(margin)
 		});
+
+		if(currency != address(0)) {
+			_transferIn(currency, fee);
+		}
 
 		emit NewOrder(
 			key,
@@ -465,11 +469,16 @@ contract Trading {
 
 		if (pnl <= -1 * int256(threshold)) {
 
-			uint256 fee = position.margin - threshold;
+			// To fix reentracncy
+			uint64 pSize = position.size;
+			uint64 pMargin = position.margin;
+			delete positions[key];
+
+			uint256 fee = pMargin - threshold;
 			address pool = IRouter(router).getPool(currency);
 
 			_transferOut(currency, pool, threshold);
-			_updateOpenInterest(currency, position.size, true);
+			_updateOpenInterest(currency, pSize, true);
 			pendingFees[currency] += fee;
 
 			emit ClosePosition(
@@ -479,14 +488,14 @@ contract Trading {
 				currency,
 				isLong,
 				price,
-				position.margin,
-				position.size,
+				pMargin,
+				pSize,
 				fee,
-				-1 * int256(uint256(position.margin)),
+				-1 * int256(uint256(pMargin)),
 				true
 			);
 
-			delete positions[key];
+			
 
 		}
 

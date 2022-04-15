@@ -101,8 +101,6 @@ contract Pool {
 		if (currency == address(0)) {
 			amount = msg.value;
 			lastBalance -= amount;
-		} else {
-			_transferIn(amount);
 		}
 
 		require(amount > 0, "!amount");
@@ -116,6 +114,10 @@ contract Pool {
 
         totalSupply += clpAmountToMint;
         balances[msg.sender] += clpAmountToMint;
+
+		if (currency != address(0)) {
+			_transferIn(amount);
+		}
 
         emit Deposit(
         	msg.sender,
