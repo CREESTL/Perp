@@ -584,11 +584,7 @@ contract Trading {
 				-1 * int256(uint256(pMargin)),
 				true
 			);
-
-			
-
 		}
-
 	}
 
 	function releaseMargin(
