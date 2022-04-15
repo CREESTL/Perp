@@ -18,6 +18,7 @@ contract Router {
 	address public capPool;
 	address public treasury;
 	address public darkOracle;
+	address public factory;
 
 	address[] public currencies;
 
@@ -117,10 +118,14 @@ contract Router {
 		owner = newOwner;
 	}
 
+	function addCurrency(address _currency) external onlyOwner {
+		currencies.push(_currency);
+	}
+
 	// Modifiers
 
 	modifier onlyOwner() {
-		require(msg.sender == owner, "!owner");
+		require(msg.sender == owner || msg.sender == factory, "!owner");
 		_;
 	}
 

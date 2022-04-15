@@ -29,4 +29,20 @@ interface IRouter {
     function getPoolRewards(address currency) external view returns (address);
 
     function getCapRewards(address currency) external view returns (address);
+
+    function setPool(address currency, address _contract) external;
+
+    function setPoolRewards(address currency, address _contract) external;
+
+    function setCapRewards(address currency, address _contract) external;
+
+    function setCurrencies(address[] calldata _currencies) external;
+
+    function setDecimals(address currency, uint8 _decimals) external;
+    
+    function setPoolShare(address currency, uint256 share) external;
+
+    function setCapShare(address currency, uint256 share) external;
+
+    function addCurrency(address _currency) external;
 }
