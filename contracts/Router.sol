@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+
 import "./libraries/SafeERC20.sol";
 
 import "./interfaces/ITreasury.sol";
@@ -9,7 +11,7 @@ import "./interfaces/IRouter.sol";
 
 contract Router {
 
-	using SafeERC20 for IERC20; 
+	using SafeERC20 for IERC20Metadata; 
 
 	// Contract dependencies
 	address public owner;
@@ -67,7 +69,7 @@ contract Router {
 	function getDecimals(address currency) external view returns(uint8) {
 		if (currency == address(0)) return 18;
 		if (decimals[currency] > 0) return decimals[currency];
-		if (IERC20(currency).decimals() > 0) return IERC20(currency).decimals();
+		if (IERC20Metadata(currency).decimals() > 0) return IERC20Metadata(currency).decimals();
 		return 18;
 	}
 
