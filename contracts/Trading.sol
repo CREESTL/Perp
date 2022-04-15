@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
 import "./libraries/SafeERC20.sol";
 import "./libraries/Address.sol";
 
@@ -10,7 +8,7 @@ import "./interfaces/IRouter.sol";
 import "./interfaces/ITreasury.sol";
 import "./interfaces/IPool.sol";
 
-contract Trading is ReentrancyGuard {
+contract Trading {
 
 	// All amounts in 8 decimals unless otherwise indicated
 
@@ -206,7 +204,7 @@ contract Trading is ReentrancyGuard {
 		bool isLong,
 		uint256 margin,
 		uint256 size
-	) external payable nonReentrant {
+	) external payable {
 
 		if (currency == address(0)) { // User is sending ETH
 			margin = msg.value / 10**(18 - UNIT_DECIMALS);
@@ -269,7 +267,7 @@ contract Trading is ReentrancyGuard {
 		address currency,
 		bool isLong,
 		uint256 size
-	) external payable nonReentrant {
+	) external payable {
 
 		require(size > 0, "!size");
 
@@ -537,7 +535,7 @@ contract Trading is ReentrancyGuard {
 		address currency,
 		bool isLong,
 		uint256 price
-	) external onlyOracle nonReentrant {
+	) external onlyOracle {
 
 		bytes32 key = _getPositionKey(user, productId, currency, isLong);
 
