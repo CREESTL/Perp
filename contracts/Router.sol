@@ -88,13 +88,15 @@ contract Router {
 		address _trading,
 		address _capPool,
 		address _oracle,
-		address _darkOracle
+		address _darkOracle, 
+		address _factory
 	) external onlyOwnerOrFactory {
 		treasury = _treasury;
 		trading = _trading;
 		capPool = _capPool;
 		oracle = _oracle;
 		darkOracle = _darkOracle;
+		factory = _factory;
 	}
 
 	function setPool(address currency, address _contract) external onlyOwnerOrFactory {

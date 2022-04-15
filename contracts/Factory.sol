@@ -8,7 +8,6 @@ import "./Rewards.sol";
 contract Factory {
     address public owner;
     address public router;
-    mapping(address => bool) public isAdded;
 
     event TokenAdded(
         address indexed newToken,
@@ -24,9 +23,10 @@ contract Factory {
     function setRouter(address _router) external onlyOwner {
         router = _router;
     }
-
+    
     function addToken(address _currency, uint8 _decimals, uint256 _share) external onlyOwner {
-        require(!isAdded[_currency] && _currency != address(0), "!added");
+        require(!IRouter(router).isSupportedCurrency(_currency), "!added");
+        require(IRouter(router).getPoolRewards(_currency) == address(0), "poolRewardsExists");
 
         IRouter(router).setDecimals(_currency, _decimals);
         IRouter(router).addCurrency(_currency); // add currency in array
@@ -41,8 +41,6 @@ contract Factory {
         Rewards capRewards = new Rewards(address(pool), _currency);
         IRouter(router).setCapRewards(_currency, address(capRewards));
         IRouter(router).setCapShare(_currency, _share);
-
-        isAdded[_currency] = true;
 
         emit TokenAdded(
             _currency,
