@@ -35,6 +35,12 @@ const stop = 100;
 const take = 1000;
 
 describe("Testing new methods for setting take profit and stop loss", () => {
+
+  let owner;
+  let user;
+  let cap;
+  let darkOracle;
+
   before(async () => {
     [owner, user, cap, darkOracle] = await ethers.getSigners();
     key = getKey(user.address);
