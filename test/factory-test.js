@@ -1,6 +1,13 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { getFactory, addressZero } = require("./utils.js");
+const {
+  getFactory,
+  getMockToken,
+  getTreasury,
+  getTrading,
+  getOracle,
+  getPoolCAP,
+} = require("./utils.js");
 
 describe("Testing the factory", async () => {
   let mockToken;
@@ -9,8 +16,11 @@ describe("Testing the factory", async () => {
   before(async () => {
     [owner, user, cap, darkOracle] = await ethers.getSigners();
 
-    const MockToken = await ethers.getContractFactory("MockToken");
-    mockToken = await MockToken.deploy("Mock", "MCK", 18);
+    mockToken = await getMockToken();
+    treasury = await getTreasury();
+    trading = await getTrading();
+    oracle = await getOracle();
+    poolCAP = await getPoolCAP(cap.address);
 
     factory = await getFactory();
   });
@@ -44,13 +54,12 @@ describe("Testing the factory", async () => {
 
     describe("Setting the factory", async () => {
       before(async () => {
-        // Using AddressZero because original contracts don't check if the addresses set
         await router.setContracts(
-          addressZero,
-          addressZero,
-          addressZero,
-          addressZero,
-          addressZero,
+          treasury.address,
+          trading.address,
+          poolCAP.address,
+          oracle.address,
+          darkOracle.address,
           factory.address
         );
       });

@@ -2,6 +2,12 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const {
   getFactory,
+  getPool,
+  getRouter,
+  getPoolCAP,
+  getTrading,
+  getTreasury,
+  getOracle,
   getKey,
   productId,
   product,
@@ -32,26 +38,13 @@ describe("Testing new methods for setting take profit and stop loss", () => {
         */
 
     // deploy contracts
-
     factory = await getFactory();
-
-    Pool = await ethers.getContractFactory("Pool");
-    pool = await Pool.deploy(addressZero);
-
-    Trading = await ethers.getContractFactory("Trading");
-    trading = await Trading.deploy();
-
-    PoolCAP = await ethers.getContractFactory("PoolCAP");
-    poolCAP = await PoolCAP.deploy(cap.address);
-
-    Oracle = await ethers.getContractFactory("Oracle");
-    oracle = await Oracle.deploy();
-
-    Treasury = await ethers.getContractFactory("Treasury");
-    treasury = await Treasury.deploy();
-
-    Router = await ethers.getContractFactory("Router");
-    router = await Router.deploy();
+    oracle = await getOracle();
+    pool = await getPool();
+    poolCAP = await getPoolCAP(cap.address);
+    trading = await getTrading();
+    treasury = await getTreasury();
+    router = await getRouter();
 
     // setting required addresses
     await router.setContracts(
