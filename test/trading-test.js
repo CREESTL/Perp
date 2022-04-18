@@ -50,35 +50,27 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     // deploy contracts
     MockToken = await ethers.getContractFactory("MockToken");
     mockToken = await MockToken.deploy("Mock", "MCK", 18);
-    await mockToken.deployed();
 
     Factory = await ethers.getContractFactory("Factory")
     factory = await Factory.deploy()
-    await factory.deployed()
 
     Pool = await ethers.getContractFactory("Pool");
     pool = await Pool.deploy(addressZero);
-    await pool.deployed();
 
     Trading = await ethers.getContractFactory("Trading");
     trading = await Trading.deploy();
-    await trading.deployed();
 
     PoolCAP = await ethers.getContractFactory("PoolCAP");
     poolCAP = await PoolCAP.deploy(cap.address);
-    await poolCAP.deployed();
 
     Oracle = await ethers.getContractFactory("Oracle");
     oracle = await Oracle.deploy();
-    await oracle.deployed();
 
     Treasury = await ethers.getContractFactory("Treasury");
     treasury = await Treasury.deploy();
-    await treasury.deployed();
 
     Router = await ethers.getContractFactory("Router");
     router = await Router.deploy();
-    await router.deployed();
 
     // setting required addresses
     await router.setContracts(
