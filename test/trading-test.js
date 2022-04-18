@@ -52,6 +52,10 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     mockToken = await MockToken.deploy("Mock", "MCK", 18);
     await mockToken.deployed();
 
+    Factory = await ethers.getContractFactory("Factory")
+    factory = await Factory.deploy()
+    await factory.deployed()
+
     Pool = await ethers.getContractFactory("Pool");
     pool = await Pool.deploy(addressZero);
     await pool.deployed();
@@ -82,7 +86,8 @@ describe("Testing new methods for setting take profit and stop loss", () => {
       trading.address,
       poolCAP.address,
       oracle.address,
-      darkOracle.address
+      darkOracle.address,
+      factory.address
     );
 
     await oracle.setRouter(router.address);

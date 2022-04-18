@@ -1,12 +1,11 @@
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-const { REPORT_GAS } = process.env;
 require('@nomiclabs/hardhat-ethers');
 require("@nomiclabs/hardhat-waffle");
 
 require('solidity-coverage');
-// require('hardhat-gas-reporter');
+require('hardhat-gas-reporter');
 // require("@nomiclabs/hardhat-etherscan");
 
 module.exports = {
@@ -22,7 +21,7 @@ module.exports = {
     },
   },
   gasReporter: {
-    enabled: REPORT_GAS === "true" ? true : false
+    enabled: false,
   },
   solidity: {
     compilers: [{
