@@ -21,12 +21,13 @@ contract Factory {
     }
 
     function setRouter(address _router) external onlyOwner {
+        require(_router != address(0), "!router");
         router = _router;
     }
     
     function addToken(address _currency, uint8 _decimals, uint256 _share) external onlyOwner {
         require(!IRouter(router).isSupportedCurrency(_currency), "!added");
-        require(IRouter(router).getPoolRewards(_currency) == address(0), "poolRewardsExists");
+        require(IRouter(router).getPoolRewards(_currency) == address(0), "!poolRewardsExists");
 
         IRouter(router).setDecimals(_currency, _decimals);
         IRouter(router).addCurrency(_currency); // add currency in array
