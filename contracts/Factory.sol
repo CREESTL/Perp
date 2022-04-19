@@ -27,8 +27,8 @@ contract Factory {
     
     function addToken(address _currency, uint8 _decimals, uint256 _share) external onlyOwner {
         require(_currency != address(0), "!currency");
-        require(IRouter(router).getPool(currency) == address(0), "!poolExists");
-        require(IRouter(router).getCapRewards(currency), "!capRewardsExists");
+        require(IRouter(router).getPool(_currency) == address(0), "!poolExists");
+        require(IRouter(router).getCapRewards(_currency) == address(0), "!capRewardsExists");
         require(IRouter(router).getPoolRewards(_currency) == address(0), "!poolRewardsExists");
 
         IRouter(router).setDecimals(_currency, _decimals);
