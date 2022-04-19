@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const {
+  addressZero,
   getFactory,
   getMockToken,
   getTreasury,
@@ -30,6 +31,10 @@ describe("Testing the factory", async () => {
       factory.addToken(mockToken.address, 18, 100)
     ).to.be.revertedWith("function call to a non-contract account");
   });
+
+  it('should fail to set zero router', async() => {
+    await expect(factory.setRouter(addressZero)).to.be.revertedWith("!router");
+  })
 
   describe("Adding the router", async () => {
     let router;
@@ -86,6 +91,12 @@ describe("Testing the factory", async () => {
         await expect(
           factory.addToken(mockToken.address, 18, 100)
         ).to.be.revertedWith("!added");
+      });
+
+      it("should fail to add already supported token", async () => {
+        await expect(
+          factory.addToken(addressZero, 18, 100)
+        ).to.be.revertedWith("!poolExists");
       });
     });
   });
