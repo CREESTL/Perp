@@ -26,6 +26,12 @@ describe("Testing the factory", async () => {
     factory = await getFactory();
   });
 
+  it("should fail because not the owner", async() => {
+    await expect(
+      factory.connect(user).addToken(mockToken.address, 18, 100)
+    ).to.be.revertedWith("!owner");
+  })
+
   it("should fail without router", async () => {
     await expect(
       factory.addToken(mockToken.address, 18, 100)
@@ -87,17 +93,41 @@ describe("Testing the factory", async () => {
         expect(await router.isSupportedCurrency(mockToken.address)).to.be.true;
       });
 
+      it("should fail to add zero token", async () => {
+        await expect(
+          factory.addToken(addressZero, 18, 100)
+        ).to.be.revertedWith("!currency");
+      });
+
       it("should fail to add already supported token", async () => {
         await expect(
           factory.addToken(mockToken.address, 18, 100)
         ).to.be.revertedWith("!poolExists");
       });
 
-      it("should fail to add already supported token", async () => {
+      it("should fail because cap rewards already exist", async() => {
+        // nullify pool for testing
+        await router.setPool(mockToken.address, addressZero);
         await expect(
-          factory.addToken(addressZero, 18, 100)
-        ).to.be.revertedWith("!poolExists");
-      });
+          factory.addToken(mockToken.address, 18, 100)
+        ).to.be.revertedWith("!capRewardsExists");
+      })
+
+      it("should fail because pool rewards already exist", async() => {
+        // nullify cap rewards for testing
+        await router.setCapRewards(mockToken.address, addressZero);
+        await expect(
+          factory.addToken(mockToken.address, 18, 100)
+        ).to.be.revertedWith("!poolRewardsExists");
+      })
+
+      it("should fail because currency was already added", async() => {
+        // nullify pool rewards for testing
+        await router.setPoolRewards(mockToken.address, addressZero);
+        await expect(
+          factory.addToken(mockToken.address, 18, 100)
+        ).to.be.revertedWith("currencyAdded");
+      })
     });
   });
 });
