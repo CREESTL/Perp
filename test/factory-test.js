@@ -90,7 +90,7 @@ describe("Testing the factory", async () => {
       it("should fail to add already supported token", async () => {
         await expect(
           factory.addToken(mockToken.address, 18, 100)
-        ).to.be.revertedWith("!added");
+        ).to.be.revertedWith("!poolExists");
       });
 
       it("should fail to add already supported token", async () => {
