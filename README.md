@@ -12,4 +12,4 @@
 
 You need to create an .env file and enter your data into it, as indicated in .env.example
 
-* npx hardhat run scripts/deploy.js --network <your-network>
+* npx hardhat run scripts/deploy.js --network "your-network"
