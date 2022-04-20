@@ -7,7 +7,8 @@ require("@nomiclabs/hardhat-etherscan");
 
 require('solidity-coverage');
 require('hardhat-gas-reporter');
-// require("@nomiclabs/hardhat-etherscan");
+
+const mnemonic = fs.readFileSync('.secret').toString().trim();
 
 module.exports = {
   networks: {
@@ -15,14 +16,14 @@ module.exports = {
       allowUnlimitedContractSize: false
     },
     rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/oRFHpW926CHVKUjXbSuD9oLG4EQLfS9u`,
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_ID}`,
       chainId: 4,
       gasPrice: 7000000000,
-      accounts: {mnemonic: "escape asthma range van match denial settle maze daughter angle curve portion"}
+      accounts: {mnemonic: mnemonic}
     },
   },
   etherscan: {
-    apiKey: "KYTFASKM8STTJBQM4QE3GF9IAWH8U4DJYE"
+    apiKey: `${process.env.ETHERSCAN_ID}`
   },
   gasReporter: {
     enabled: false,
