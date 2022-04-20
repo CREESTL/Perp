@@ -8,3 +8,5 @@
 * npx hardhat test
 ### Run tests with coverage report
 * npx hardhat coverage
+### Deploy and verification 
+* npx hardhat run scripts/deploy.js --network <your-network>
