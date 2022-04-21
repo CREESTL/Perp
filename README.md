@@ -8,3 +8,8 @@
 * npx hardhat test
 ### Run tests with coverage report
 * npx hardhat coverage
+### Deploy and verification 
+
+You need to create an .env file and enter your data into it, as indicated in .env.example
+
+* npx hardhat run scripts/deploy.js --network "your-network"
