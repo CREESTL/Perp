@@ -15,7 +15,7 @@ async function main() {
   const mock = await (await ethers.getContractFactory("MockToken")).deploy("Mock", "MCK", 18);
   const treasury = await (await ethers.getContractFactory("Treasury")).deploy();
   const trading = await (await ethers.getContractFactory("Trading")).deploy();
-  const capPool = await (await ethers.getContractFactory("PoolCAP")).deploy(mock.address);
+  const parifiPool = await (await ethers.getContractFactory("PoolParifi")).deploy(mock.address);
   const oracle = await (await ethers.getContractFactory("Oracle")).deploy();
   const factory = await (await ethers.getContractFactory("Factory")).deploy();
   const router = await (await ethers.getContractFactory("Router")).deploy();
@@ -25,7 +25,7 @@ async function main() {
 
   await treasury.setRouter(router.address);
   await trading.setRouter(router.address);
-  await capPool.setRouter(router.address);
+  await parifiPool.setRouter(router.address);
   await oracle.setRouter(router.address);
   await oracle.setParams(requestsPerFunding, costPerRequest)
   await factory.setRouter(router.address);
@@ -33,7 +33,7 @@ async function main() {
   await router.setContracts(
     treasury.address,
     trading.address,
-    capPool.address,
+    parifiPool.address,
     oracle.address,
     darkOracle,
     factory.address
@@ -59,7 +59,7 @@ async function main() {
   } 
   try {
     await hre.run("verify:verify", {
-      address: capPool.address,
+      address: parifiPool.address,
       constructorArguments: [
         mock.address,
       ],
@@ -93,7 +93,7 @@ async function main() {
 
   console.log("Treasury deployed to:", treasury.address);
   console.log("Trading deployed to:", trading.address);
-  console.log("Cap Pool deployed to:", capPool.address);
+  console.log("Parifi Pool deployed to:", parifiPool.address);
   console.log("Oracle deployed to:", oracle.address);
   console.log("Factory deployed to:", factory.address);
   console.log("Router deployed to:", router.address);

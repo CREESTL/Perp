@@ -7,7 +7,7 @@ const {
   getTreasury,
   getTrading,
   getOracle,
-  getPoolCAP,
+  getPoolParifi,
 } = require("./utils.js");
 
 describe("Testing the factory", async () => {
@@ -15,13 +15,13 @@ describe("Testing the factory", async () => {
   let factory;
 
   before(async () => {
-    [owner, user, cap, darkOracle] = await ethers.getSigners();
+    [owner, user, parifi, darkOracle] = await ethers.getSigners();
 
     mockToken = await getMockToken();
     treasury = await getTreasury();
     trading = await getTrading();
     oracle = await getOracle();
-    poolCAP = await getPoolCAP(cap.address);
+    poolParifi = await getPoolParifi(parifi.address);
 
     factory = await getFactory();
   });
@@ -68,7 +68,7 @@ describe("Testing the factory", async () => {
         await router.setContracts(
           treasury.address,
           trading.address,
-          poolCAP.address,
+          poolParifi.address,
           oracle.address,
           darkOracle.address,
           factory.address
@@ -88,7 +88,7 @@ describe("Testing the factory", async () => {
             mockToken.address,
             await router.getPool(mockToken.address),
             await router.getPoolRewards(mockToken.address),
-            await router.getCapRewards(mockToken.address)
+            await router.getParifiRewards(mockToken.address)
           );
         expect(await router.isSupportedCurrency(mockToken.address)).to.be.true;
       });
@@ -105,17 +105,17 @@ describe("Testing the factory", async () => {
         ).to.be.revertedWith("!poolExists");
       });
 
-      it("should fail because cap rewards already exist", async() => {
+      it("should fail because parifi rewards already exist", async() => {
         // nullify pool for testing
         await router.setPool(mockToken.address, addressZero);
         await expect(
           factory.addToken(mockToken.address, 18, 100)
-        ).to.be.revertedWith("!capRewardsExists");
+        ).to.be.revertedWith("!parifiRewardsExists");
       })
 
       it("should fail because pool rewards already exist", async() => {
-        // nullify cap rewards for testing
-        await router.setCapRewards(mockToken.address, addressZero);
+        // nullify parifi rewards for testing
+        await router.setParifiRewards(mockToken.address, addressZero);
         await expect(
           factory.addToken(mockToken.address, 18, 100)
         ).to.be.revertedWith("!poolRewardsExists");

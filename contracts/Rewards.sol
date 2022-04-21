@@ -112,8 +112,8 @@ contract Rewards {
 		if (supply == 0) return currentClaimableReward;
 
 		uint256 share;
-		if (pool == IRouter(router).capPool()) {
-			share = IRouter(router).getCapShare(currency);
+		if (pool == IRouter(router).parifiPool()) {
+			share = IRouter(router).getParifiShare(currency);
 		} else {
 			share = IRouter(router).getPoolShare(currency);
 		}

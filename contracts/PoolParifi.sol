@@ -6,31 +6,31 @@ import "./libraries/SafeERC20.sol";
 import "./interfaces/IRouter.sol";
 import "./interfaces/IRewards.sol";
 
-contract PoolCAP {
+contract PoolParifi {
 
 	using SafeERC20 for IERC20; 
 
 	address public owner;
 	address public router;
 
-	address public cap; // CAP address
+	address public parifi; // parifi address
 
 	mapping(address => uint256) private balances; // account => amount staked
 	uint256 public totalSupply;
 
 	// Events
-    event DepositCAP(
+    event DepositParifi(
     	address indexed user, 
     	uint256 amount
     );
-    event WithdrawCAP(
+    event WithdrawParifi(
     	address indexed user,
     	uint256 amount
     );
 
-	constructor(address _cap) {
+	constructor(address _parifi) {
 		owner = msg.sender;
-		cap = _cap;
+		parifi = _parifi;
 	}
 
 	// Governance methods
@@ -52,9 +52,9 @@ contract PoolCAP {
 		totalSupply += amount;
 		balances[msg.sender] += amount;
 
-		IERC20(cap).safeTransferFrom(msg.sender, address(this), amount);
+		IERC20(parifi).safeTransferFrom(msg.sender, address(this), amount);
 
-		emit DepositCAP(
+		emit DepositParifi(
 			msg.sender,
 			amount
 		);
@@ -74,9 +74,9 @@ contract PoolCAP {
 		totalSupply -= amount;
 		balances[msg.sender] -= amount;
 
-		IERC20(cap).safeTransfer(msg.sender, amount);
+		IERC20(parifi).safeTransfer(msg.sender, amount);
 
-		emit WithdrawCAP(
+		emit WithdrawParifi(
 			msg.sender,
 			amount
 		);
@@ -91,7 +91,7 @@ contract PoolCAP {
 		uint256 length = IRouter(router).currenciesLength();
 		for (uint256 i = 0; i < length; i++) {
 			address currency = IRouter(router).currencies(i);
-			address rewardsContract = IRouter(router).getCapRewards(currency);
+			address rewardsContract = IRouter(router).getParifiRewards(currency);
 			IRewards(rewardsContract).updateRewards(msg.sender);
 		}
 	}

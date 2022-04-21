@@ -47,17 +47,17 @@ contract Treasury {
 
 		// Contracts from Router
 		address poolRewards = IRouter(router).getPoolRewards(currency);
-		address capRewards = IRouter(router).getCapRewards(currency);
+		address parifiRewards = IRouter(router).getParifiRewards(currency);
 
 		// Send poolShare to pool-currency rewards contract
 		uint256 poolReward = IRouter(router).getPoolShare(currency) * amount / 10**4;
 		_transferOut(currency, poolRewards, poolReward);
 		IRewards(poolRewards).notifyRewardReceived(poolReward);
 
-		// Send capPoolShare to cap-currency rewards contract
-		uint256 capReward = IRouter(router).getCapShare(currency) * amount / 10**4;
-		_transferOut(currency, capRewards, capReward);
-		IRewards(capRewards).notifyRewardReceived(capReward);
+		// Send parifiPoolShare to parifi-currency rewards contract
+		uint256 parifiReward = IRouter(router).getParifiShare(currency) * amount / 10**4;
+		_transferOut(currency, parifiRewards, parifiReward);
+		IRewards(parifiRewards).notifyRewardReceived(parifiReward);
 
 	}
 

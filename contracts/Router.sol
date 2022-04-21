@@ -17,7 +17,7 @@ contract Router {
 	address public owner;
 	address public trading;
 	address public oracle;
-	address public capPool;
+	address public parifiPool;
 	address public treasury;
 	address public darkOracle;
 	address public factory;
@@ -29,10 +29,10 @@ contract Router {
 	mapping(address => address) pools; // currency => contract
 	
 	mapping(address => uint256) private poolShare; // currency (eth, usdc, etc.) => bps
-	mapping(address => uint256) private capShare; // currency => bps
+	mapping(address => uint256) private parifiShare; // currency => bps
 
 	mapping(address => address) poolRewards; // currency => contract
-	mapping(address => address) capRewards; // currency => contract
+	mapping(address => address) parifiRewards; // currency => contract
 
 	constructor() {
 		owner = msg.sender;
@@ -54,16 +54,16 @@ contract Router {
 		return poolShare[currency];
 	}
 
-	function getCapShare(address currency) external view returns(uint256) {
-		return capShare[currency];
+	function getParifiShare(address currency) external view returns(uint256) {
+		return parifiShare[currency];
 	}
 
 	function getPoolRewards(address currency) external view returns(address) {
 		return poolRewards[currency];
 	}
 
-	function getCapRewards(address currency) external view returns(address) {
-		return capRewards[currency];
+	function getParifiRewards(address currency) external view returns(address) {
+		return parifiRewards[currency];
 	}
 
 	function getDecimals(address currency) external view returns(uint8) {
@@ -86,14 +86,14 @@ contract Router {
 	function setContracts(
 		address _treasury,
 		address _trading,
-		address _capPool,
+		address _parifiPool,
 		address _oracle,
 		address _darkOracle, 
 		address _factory
 	) external onlyOwnerOrFactory {
 		treasury = _treasury;
 		trading = _trading;
-		capPool = _capPool;
+		parifiPool = _parifiPool;
 		oracle = _oracle;
 		darkOracle = _darkOracle;
 		factory = _factory;
@@ -106,16 +106,16 @@ contract Router {
 	function setPoolShare(address currency, uint256 share) external onlyOwnerOrFactory {
 		poolShare[currency] = share;
 	}
-	function setCapShare(address currency, uint256 share) external onlyOwnerOrFactory {
-		capShare[currency] = share;
+	function setParifiShare(address currency, uint256 share) external onlyOwnerOrFactory {
+		parifiShare[currency] = share;
 	}
 
 	function setPoolRewards(address currency, address _contract) external onlyOwnerOrFactory {
 		poolRewards[currency] = _contract;
 	}
 
-	function setCapRewards(address currency, address _contract) external onlyOwnerOrFactory {
-		capRewards[currency] = _contract;
+	function setParifiRewards(address currency, address _contract) external onlyOwnerOrFactory {
+		parifiRewards[currency] = _contract;
 	}
 
 	function setOwner(address newOwner) external onlyOwnerOrFactory {

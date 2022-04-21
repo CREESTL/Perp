@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 interface IRouter {
     function trading() external view returns (address);
 
-    function capPool() external view returns (address);
+    function parifiPool() external view returns (address);
 
     function oracle() external view returns (address);
 
@@ -24,17 +24,17 @@ interface IRouter {
 
     function getPoolShare(address currency) external view returns(uint256);
 
-    function getCapShare(address currency) external view returns(uint256);
+    function getParifiShare(address currency) external view returns(uint256);
 
     function getPoolRewards(address currency) external view returns (address);
 
-    function getCapRewards(address currency) external view returns (address);
+    function getParifiRewards(address currency) external view returns (address);
 
     function setPool(address currency, address _contract) external;
 
     function setPoolRewards(address currency, address _contract) external;
 
-    function setCapRewards(address currency, address _contract) external;
+    function setParifiRewards(address currency, address _contract) external;
 
     function setCurrencies(address[] calldata _currencies) external;
 
@@ -42,7 +42,7 @@ interface IRouter {
     
     function setPoolShare(address currency, uint256 share) external;
 
-    function setCapShare(address currency, uint256 share) external;
+    function setParifiShare(address currency, uint256 share) external;
 
     function addCurrency(address _currency) external;
 }

@@ -4,7 +4,7 @@ const {
   getFactory,
   getPool,
   getRouter,
-  getPoolCAP,
+  getPoolParifi,
   getTrading,
   getTreasury,
   getOracle,
@@ -22,11 +22,11 @@ const {
 describe("Testing new methods for setting take profit and stop loss", () => {
   let owner;
   let user;
-  let cap;
+  let parifi;
   let darkOracle;
 
   before(async () => {
-    [owner, user, cap, darkOracle] = await ethers.getSigners();
+    [owner, user, parifi, darkOracle] = await ethers.getSigners();
     key = getKey(user.address);
   });
 
@@ -41,7 +41,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     factory = await getFactory();
     oracle = await getOracle();
     pool = await getPool();
-    poolCAP = await getPoolCAP(cap.address);
+    poolParifi = await getPoolParifi(parifi.address);
     trading = await getTrading();
     treasury = await getTreasury();
     router = await getRouter();
@@ -50,7 +50,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     await router.setContracts(
       treasury.address,
       trading.address,
-      poolCAP.address,
+      poolParifi.address,
       oracle.address,
       darkOracle.address,
       factory.address

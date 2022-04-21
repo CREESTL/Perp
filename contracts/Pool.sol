@@ -24,7 +24,7 @@ contract Pool {
 
     uint256 public utilizationMultiplier = 100; // in bps
 
-    uint256 public maxCap = 1000000 ether;
+    uint256 public maxParifi = 1000000 ether;
 
     mapping(address => uint256) private balances; // account => amount staked
     uint256 public totalSupply;
@@ -70,12 +70,12 @@ contract Pool {
 	function setParams(
 		uint256 _minDepositTime,
 		uint256 _utilizationMultiplier,
-		uint256 _maxCap,
+		uint256 _maxParifi,
 		uint256 _withdrawFee
 	) external onlyOwner {
 		minDepositTime = _minDepositTime;
 		utilizationMultiplier = _utilizationMultiplier;
-		maxCap = _maxCap;
+		maxParifi = _maxParifi;
 		withdrawFee = _withdrawFee;
 	}
 
@@ -104,7 +104,7 @@ contract Pool {
 		}
 
 		require(amount > 0, "!amount");
-		require(amount + lastBalance <= maxCap, "!max-cap");
+		require(amount + lastBalance <= maxParifi, "!max-parifi");
 
         uint256 clpAmountToMint = lastBalance == 0 || totalSupply == 0 ? amount : amount * totalSupply / lastBalance;
 

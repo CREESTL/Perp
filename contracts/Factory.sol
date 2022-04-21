@@ -13,7 +13,7 @@ contract Factory {
         address indexed newToken,
         address indexed pool,
         address poolRewards,
-        address capRewards
+        address parifiRewards
     );
 
     constructor() {
@@ -28,7 +28,7 @@ contract Factory {
     function addToken(address _currency, uint8 _decimals, uint256 _share) external onlyOwner {
         require(_currency != address(0), "!currency");
         require(IRouter(router).getPool(_currency) == address(0), "!poolExists");
-        require(IRouter(router).getCapRewards(_currency) == address(0), "!capRewardsExists");
+        require(IRouter(router).getParifiRewards(_currency) == address(0), "!parifiRewardsExists");
         require(IRouter(router).getPoolRewards(_currency) == address(0), "!poolRewardsExists");
 
         IRouter(router).setDecimals(_currency, _decimals);
@@ -41,15 +41,15 @@ contract Factory {
         Rewards poolRewards = new Rewards(address(pool), _currency);
         IRouter(router).setPoolRewards(_currency, address(poolRewards));
 
-        Rewards capRewards = new Rewards(address(pool), _currency);
-        IRouter(router).setCapRewards(_currency, address(capRewards));
-        IRouter(router).setCapShare(_currency, _share);
+        Rewards parifiRewards = new Rewards(address(pool), _currency);
+        IRouter(router).setParifiRewards(_currency, address(parifiRewards));
+        IRouter(router).setParifiShare(_currency, _share);
 
         emit TokenAdded(
             _currency,
             address(pool),
             address(poolRewards),
-            address(capRewards)
+            address(parifiRewards)
         );
     }
 

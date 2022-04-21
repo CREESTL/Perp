@@ -21,11 +21,11 @@ async function getTrading() {
   return trading;
 }
 
-async function getPoolCAP(capAddress) {
-  const poolCAP = await (
-    await ethers.getContractFactory("PoolCAP")
-  ).deploy(capAddress);
-  return poolCAP;
+async function getPoolParifi(parifiAddress) {
+  const poolParifi = await (
+    await ethers.getContractFactory("PoolParifi")
+  ).deploy(parifiAddress);
+  return poolParifi;
 }
 
 async function getOracle() {
@@ -94,7 +94,7 @@ module.exports = {
   getRouter,
   getPool,
   getTrading,
-  getPoolCAP,
+  getPoolParifi,
   getOracle,
   getTreasury,
   getKey,
