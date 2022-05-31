@@ -23,13 +23,6 @@ async function main() {
   console.log("Deploy finished")
   console.log("Wait for configuration, please")
 
-  await treasury.setRouter(router.address);
-  await trading.setRouter(router.address);
-  await parifiPool.setRouter(router.address);
-  await oracle.setRouter(router.address);
-  await oracle.setParams(requestsPerFunding, costPerRequest)
-  await factory.setRouter(router.address);
-
   await router.setContracts(
     treasury.address,
     trading.address,
@@ -38,6 +31,13 @@ async function main() {
     darkOracle,
     factory.address
   )
+
+  await treasury.setRouter(router.address);
+  await trading.setRouter(router.address);
+  await parifiPool.setRouter(router.address);
+  await oracle.setRouter(router.address);
+  await oracle.setParams(requestsPerFunding, costPerRequest)
+  await factory.setRouter(router.address);
 
   console.log("Configuration finished")
   console.log("Wait for verification, please")
