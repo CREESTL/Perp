@@ -175,6 +175,28 @@ describe("Testing the factory", async () => {
             withdrawFee
           );
       });
+
+      it("should check call setParamsPool only owner", async() => {
+        const currency = mockToken.address;
+        await factory.addToken(currency, 18, 100);
+        await expect(
+          factory.connect(user).setParamsPool(currency, 0, 0, 0, 0)
+        ).to.be.revertedWith("!owner");
+      })
+
+      it("should revert call setParamsPool", async() => {
+        const currency = mockToken.address;
+        await expect(
+          factory.connect(user).setParamsPool(currency, 0, 0, 0, 0)
+        ).to.be.reverted;
+      })
+
+      it("should revert call setRouterForPoolAndRewards", async() => {
+        const currency = mockToken.address;
+        await expect(
+          factory.connect(user).setRouterForPoolAndRewards(currency)
+        ).to.be.reverted;
+      })
     });
   });
 });

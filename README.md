@@ -81,3 +81,5 @@ Also the possibility to add new currency for trading was added. The Factory.sol 
 
 This function adds address of the new token, checks if this address is valid. Also checks that pool hasn't been created yet. After it the router smart contract creates the pool for the new token, poolRewards, ParifiReward, configures setPoolShare and setParfiShare. Emits the TokenAdded event at the end.
 
+#### Addresses of deployed contracts can be seen in /scripts/deployedContractsOutput.json
+

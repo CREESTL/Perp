@@ -12,8 +12,8 @@ contract Factory {
     address public router;
 
     event TokenAdded(
-        address indexed newToken,
-        address indexed pool,
+        address newToken,
+        address pool,
         address poolRewards,
         address parifiRewards
     );
@@ -25,10 +25,10 @@ contract Factory {
     );
 
     event UpdateParams(
-        uint256 _minDepositTime,
-        uint256 _utilizationMultiplier,
-        uint256 _maxParifi,
-        uint256 _withdrawFee
+        uint256 minDepositTime,
+        uint256 utilizationMultiplier,
+        uint256 maxParifi,
+        uint256 withdrawFee
     );
 
     constructor() {
@@ -85,6 +85,9 @@ contract Factory {
         );
     }
 
+    /**
+     * function to set router for pool, since pool doesnt know router. Get pool with help currency
+     */
     function setRouterForPoolAndRewards(
         address _currency
     ) external onlyOwner {
@@ -97,6 +100,9 @@ contract Factory {
         emit SetRouterForPoolAndRewards(pool, poolRewards, parifiRewards);
     }
 
+    /**
+     * because pool owner factory needs ability to set pool settings. Only owner can do this
+     */
     function setParamsPool(
         address _currency,
         uint256 _minDepositTime,
