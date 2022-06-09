@@ -1,13 +1,13 @@
 {
   "networks": {
     "rinkeby": {
-      "mock": "0x29F4dA7036Adb876b694d1e4Ed9B16edF7b2cC49",
-      "treasury": "0xADb90ff7A14dF900115B7eff9C217C128d70146F",
-      "trading": "0x8E505b9D240A5cEF551ff4c30a242e0aA6f8941c",
-      "parifiPool": "0x32158768db7d866EDd99503f825537552C17E041",
-      "oracle": "0x61FC44c9edcFbe72ACE950c17bE0125d50df7651",
-      "factory": "0x428767880acbfc017fF2951cBE8b8f8cb0609053",
-      "router": "0xc16c6e18aB6F165a60940ACc06D48c89C015291F"
+      "mock": "0x68341c9298307d85d5cda59C6Dc4C757C0f1E50F",
+      "treasury": "0x3291fA23d4a4a659f87a276C1100E69927e8E3F8",
+      "trading": "0x07c4145860FC90b0CCCf9A941C02cAb7D1856466",
+      "parifiPool": "0x36c546d87306AE0A973a1748477659B7e57a9CC0",
+      "oracle": "0x0765B7bdb6F88f79E904E1B35238fCD88F36d9f4",
+      "factory": "0x840FA749B1cb8f2DB05796314fB4cF8801Da63ed",
+      "router": "0xb6914d5D53c9f1093eA632913F848eFf77C9216c"
     },
     "mainnet": {
       "mock": "",
