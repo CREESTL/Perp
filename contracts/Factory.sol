@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IRouter.sol";
+import "./interfaces/IPool.sol";
+import "./interfaces/IRewards.sol";
 import "./Pool.sol";
 import "./Rewards.sol";
 
@@ -16,43 +18,106 @@ contract Factory {
         address parifiRewards
     );
 
+    event SetRouterForPoolAndRewards(
+        address pool,
+        address poolRewards,
+        address parifiRewards
+    );
+
+    event UpdateParams(
+        uint256 _minDepositTime,
+        uint256 _utilizationMultiplier,
+        uint256 _maxParifi,
+        uint256 _withdrawFee
+    );
+
     constructor() {
         owner = msg.sender;
+    }
+
+    function setOwner(address _newOwner) external onlyOwner {
+        owner = _newOwner;
     }
 
     function setRouter(address _router) external onlyOwner {
         require(_router != address(0), "!router");
         router = _router;
     }
-    
-    function addToken(address _currency, uint8 _decimals, uint256 _share) external onlyOwner {
+
+    function addToken(
+        address _currency,
+        uint8 _decimals,
+        uint256 _share
+    ) external onlyOwner {
         require(_currency != address(0), "!currency");
-        require(IRouter(router).getPool(_currency) == address(0), "!poolExists");
-        require(IRouter(router).getParifiRewards(_currency) == address(0), "!parifiRewardsExists");
-        require(IRouter(router).getPoolRewards(_currency) == address(0), "!poolRewardsExists");
+        require(
+            IRouter(router).getPool(_currency) == address(0),
+            "!poolExists"
+        );
+        require(
+            IRouter(router).getParifiRewards(_currency) == address(0),
+            "!parifiRewardsExists"
+        );
+        require(
+            IRouter(router).getPoolRewards(_currency) == address(0),
+            "!poolRewardsExists"
+        );
 
         IRouter(router).setDecimals(_currency, _decimals);
         IRouter(router).addCurrency(_currency); // add currency in array
 
-        Pool pool = new Pool(owner, _currency);
-        IRouter(router).setPool(_currency, address(pool)); 
+        Pool pool = new Pool(_currency);
+        IRouter(router).setPool(_currency, address(pool));
         IRouter(router).setPoolShare(_currency, _share);
-        pool.setRouter(router);
 
-        Rewards poolRewards = new Rewards(owner, address(pool), _currency);
+        Rewards poolRewards = new Rewards(address(pool), _currency);
         IRouter(router).setPoolRewards(_currency, address(poolRewards));
-        poolRewards.setRouter(router);
 
-        Rewards parifiRewards = new Rewards(owner, address(pool), _currency);
+        Rewards parifiRewards = new Rewards(address(pool), _currency);
         IRouter(router).setParifiRewards(_currency, address(parifiRewards));
         IRouter(router).setParifiShare(_currency, _share);
-        parifiRewards.setRouter(router);
 
         emit TokenAdded(
             _currency,
             address(pool),
             address(poolRewards),
             address(parifiRewards)
+        );
+    }
+
+    function setRouterForPoolAndRewards(
+        address _pool,
+        address _poolRewards,
+        address _parifiRewards
+    ) external onlyOwner {
+        IPool pool = IPool(_pool);
+        pool.setRouter(router);
+        IRewards poolRewards = IRewards(_poolRewards);
+        poolRewards.setRouter(router);
+        IRewards parifiRewards = IRewards(_parifiRewards);
+        parifiRewards.setRouter(router);
+        emit SetRouterForPoolAndRewards(_pool, _poolRewards, _parifiRewards);
+    }
+
+    function setParamsPool(
+        address _pool,
+        uint256 _minDepositTime,
+        uint256 _utilizationMultiplier,
+        uint256 _maxParifi,
+        uint256 _withdrawFee
+    ) external onlyOwner {
+        IPool pool = IPool(_pool);
+        pool.setParams(
+            _minDepositTime,
+            _utilizationMultiplier,
+            _maxParifi,
+            _withdrawFee
+        );
+        emit UpdateParams(
+            _minDepositTime,
+            _utilizationMultiplier,
+            _maxParifi,
+            _withdrawFee
         );
     }
 

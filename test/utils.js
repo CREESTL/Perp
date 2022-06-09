@@ -10,10 +10,10 @@ async function getFactory() {
   return factory;
 }
 
-async function getPool(addressOwner) {
+async function getPool() {
   const pool = await (
     await ethers.getContractFactory("Pool")
-  ).deploy(addressOwner, addressZero);
+  ).deploy(addressZero);
   return pool;
 }
 
