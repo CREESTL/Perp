@@ -86,28 +86,26 @@ contract Factory {
     }
 
     function setRouterForPoolAndRewards(
-        address _pool,
-        address _poolRewards,
-        address _parifiRewards
+        address _currency
     ) external onlyOwner {
-        IPool pool = IPool(_pool);
-        pool.setRouter(router);
-        IRewards poolRewards = IRewards(_poolRewards);
-        poolRewards.setRouter(router);
-        IRewards parifiRewards = IRewards(_parifiRewards);
-        parifiRewards.setRouter(router);
-        emit SetRouterForPoolAndRewards(_pool, _poolRewards, _parifiRewards);
+        address pool = IRouter(router).getPool(_currency);
+        IPool(pool).setRouter(router);
+        address poolRewards = IRouter(router).getPoolRewards(_currency);
+        IRewards(poolRewards).setRouter(router);
+        address parifiRewards = IRouter(router).getParifiRewards(_currency);
+        IRewards(parifiRewards).setRouter(router);
+        emit SetRouterForPoolAndRewards(pool, poolRewards, parifiRewards);
     }
 
     function setParamsPool(
-        address _pool,
+        address _currency,
         uint256 _minDepositTime,
         uint256 _utilizationMultiplier,
         uint256 _maxParifi,
         uint256 _withdrawFee
     ) external onlyOwner {
-        IPool pool = IPool(_pool);
-        pool.setParams(
+        address pool = IRouter(router).getPool(_currency);
+        IPool(pool).setParams(
             _minDepositTime,
             _utilizationMultiplier,
             _maxParifi,

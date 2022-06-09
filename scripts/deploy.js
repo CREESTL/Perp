@@ -115,7 +115,7 @@ async function main() {
     console.error(error);
   }
 
-  console.log("Verification finished");
+  console.log("Verification finished. Addresses in ./deployedContractsOutput.json");
 }
 
 main()
