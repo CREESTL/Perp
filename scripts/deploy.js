@@ -1,5 +1,5 @@
 const delay = require("delay");
-const { ethers } = require("hardhat");
+const { ethers, network } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 
@@ -7,7 +7,7 @@ const path = require("path");
 // darkOracle — backend address
 // oracle parameters — see setParams function in
 
-const TEST_CONFIG = require("./deployedContractsOutput.json");
+const OUTPUT_DEPLOY = require("./deployedContractsOutput.json");
 
 async function main() {
   // Need to be setted before production
@@ -21,7 +21,6 @@ async function main() {
   const mock = await (
     await ethers.getContractFactory("MockToken")
   ).deploy("Mock", "MCK", 18);
-  console.log(mock.address);
   const treasury = await (await ethers.getContractFactory("Treasury")).deploy();
   const trading = await (await ethers.getContractFactory("Trading")).deploy();
   const parifiPool = await (
@@ -44,51 +43,13 @@ async function main() {
     ["router", router.address],
   ];
 
-  // for (let i = 0; i < addresses.length; i++) {
-  //   TEST_CONFIG.networks.rinkeby.addresses[i][0] = addresses[i][1];
-  //   fs.writeFileSync(
-  //     path.resolve(__dirname, "./deployedContractsOutput.json"),
-  //     JSON.stringify(TEST_CONFIG, null, "    ")
-  //   );
-  // }
-
-  TEST_CONFIG.networks.rinkeby.mock = mock.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, "    ")
-  );
-
-  TEST_CONFIG.networks.rinkeby.treasury = treasury.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, "    ")
-  );
-
-  TEST_CONFIG.networks.rinkeby.trading = trading.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, "    ")
-  );
-  TEST_CONFIG.networks.rinkeby.parifiPool = parifiPool.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, "    ")
-  );
-  TEST_CONFIG.networks.rinkeby.oracle = oracle.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, "    ")
-  );
-  TEST_CONFIG.networks.rinkeby.factory = factory.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, "    ")
-  );
-  TEST_CONFIG.networks.rinkeby.router = router.address;
-  fs.writeFileSync(
-    path.resolve(__dirname, "./deployedContractsOutput.json"),
-    JSON.stringify(TEST_CONFIG, null, '  ')
-  );
+  for (let i = 0; i < addresses.length; i++) {
+    OUTPUT_DEPLOY.networks[network.name][addresses[i][0]] = addresses[i][1];
+    fs.writeFileSync(
+      path.resolve(__dirname, "./deployedContractsOutput.json"),
+      JSON.stringify(OUTPUT_DEPLOY, null, "  ")
+    );
+  }
 
   await router.setContracts(
     treasury.address,
