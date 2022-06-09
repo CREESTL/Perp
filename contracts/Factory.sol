@@ -34,14 +34,14 @@ contract Factory {
         IRouter(router).setDecimals(_currency, _decimals);
         IRouter(router).addCurrency(_currency); // add currency in array
 
-        Pool pool = new Pool(_currency);
+        Pool pool = new Pool(owner, _currency);
         IRouter(router).setPool(_currency, address(pool)); 
         IRouter(router).setPoolShare(_currency, _share);
 
-        Rewards poolRewards = new Rewards(address(pool), _currency);
+        Rewards poolRewards = new Rewards(owner, address(pool), _currency);
         IRouter(router).setPoolRewards(_currency, address(poolRewards));
 
-        Rewards parifiRewards = new Rewards(address(pool), _currency);
+        Rewards parifiRewards = new Rewards(owner, address(pool), _currency);
         IRouter(router).setParifiRewards(_currency, address(parifiRewards));
         IRouter(router).setParifiShare(_currency, _share);
 

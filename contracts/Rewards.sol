@@ -36,8 +36,8 @@ contract Rewards {
 		uint256 amount
 	);
 
-	constructor(address _pool, address _currency) {
-		owner = msg.sender;
+	constructor(address _owner, address _pool, address _currency) {
+		owner = _owner;
 		pool = _pool;
 		currency = _currency;
 	}

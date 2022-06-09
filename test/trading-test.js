@@ -40,7 +40,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     // deploy contracts
     factory = await getFactory();
     oracle = await getOracle();
-    pool = await getPool();
+    pool = await getPool(owner.address);
     poolParifi = await getPoolParifi(parifi.address);
     trading = await getTrading();
     treasury = await getTreasury();

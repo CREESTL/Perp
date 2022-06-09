@@ -50,8 +50,8 @@ contract Pool {
     	uint256 clpAmount
     );
 
-	constructor(address _currency) {
-		owner = msg.sender;
+	constructor(address _owner, address _currency) {
+		owner = _owner;
 		currency = _currency;
 	}
 

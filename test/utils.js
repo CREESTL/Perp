@@ -3,16 +3,17 @@ const { ethers } = require("hardhat");
 // address used for ether
 const addressZero = ethers.constants.AddressZero;
 
+
 // deploy contracts
 async function getFactory() {
   const factory = await (await ethers.getContractFactory("Factory")).deploy();
   return factory;
 }
 
-async function getPool() {
+async function getPool(addressOwner) {
   const pool = await (
     await ethers.getContractFactory("Pool")
-  ).deploy(addressZero);
+  ).deploy(addressOwner, addressZero);
   return pool;
 }
 
