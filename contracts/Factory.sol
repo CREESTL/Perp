@@ -37,13 +37,16 @@ contract Factory {
         Pool pool = new Pool(owner, _currency);
         IRouter(router).setPool(_currency, address(pool)); 
         IRouter(router).setPoolShare(_currency, _share);
+        pool.setRouter(router);
 
         Rewards poolRewards = new Rewards(owner, address(pool), _currency);
         IRouter(router).setPoolRewards(_currency, address(poolRewards));
+        poolRewards.setRouter(router);
 
         Rewards parifiRewards = new Rewards(owner, address(pool), _currency);
         IRouter(router).setParifiRewards(_currency, address(parifiRewards));
         IRouter(router).setParifiShare(_currency, _share);
+        parifiRewards.setRouter(router);
 
         emit TokenAdded(
             _currency,
