@@ -14,6 +14,8 @@ You need to create an .env file and enter your data into it, as indicated in .en
 
 * npx hardhat run scripts/deploy.js --network "your-network"
 
+### Addresses of deployed contracts can be seen in /scripts/deployedContractsOutput.json
+
 ## Description of how limit orders work
 
 To setup limit orders such as stop-loss and take-profit we created the next functionality:
@@ -81,5 +83,19 @@ Also the possibility to add new currency for trading was added. The Factory.sol 
 
 This function adds address of the new token, checks if this address is valid. Also checks that pool hasn't been created yet. After it the router smart contract creates the pool for the new token, poolRewards, ParifiReward, configures setPoolShare and setParfiShare. Emits the TokenAdded event at the end.
 
-#### Addresses of deployed contracts can be seen in /scripts/deployedContractsOutput.json
+#### setRouterForPoolAndRewards:
 
+- address currency
+- address router
+
+This function is needed to set the router for a specific token pool. After adding a new token, the factory becomes an owner, and through it we have to call setter functions.
+
+#### setParamsPool:
+
+- address currency
+- address minDepositTime
+- uint256 utilizationMultiplier
+- uint256 maxParifi
+- uint256 withdrawFee
+
+The meaning of this function is similar to the one described above.
