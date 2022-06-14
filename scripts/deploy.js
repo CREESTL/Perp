@@ -11,7 +11,7 @@ const OUTPUT_DEPLOY = require("./deployedContractsOutput.json");
 
 async function main() {
   // Need to be setted before production
-  const darkOracle = ethers.constants.AddressZero;
+  const darkOracle = "0x9F2Cc9DD4664313cF8061D3806Be8e7123c91454";
   const requestsPerFunding = 0;
   const costPerRequest = 0;
 
@@ -66,6 +66,11 @@ async function main() {
   await oracle.setRouter(router.address);
   await oracle.setParams(requestsPerFunding, costPerRequest);
   await factory.setRouter(router.address);
+
+  // only for tests. REMOVE FOR DEPLOY IN MAINNET
+  const productId = ethers.utils.formatBytes32String("0")
+  const product = [5000000000, 8000, 0, 535]
+  await trading.addProduct(productId, product)
 
   console.log("Configuration finished");
   console.log("Wait for verification, please");

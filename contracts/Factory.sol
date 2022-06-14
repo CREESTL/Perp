@@ -89,14 +89,17 @@ contract Factory {
      * function to set router for pool, since pool doesnt know router. Get pool with help currency
      */
     function setRouterForPoolAndRewards(
-        address _currency
+        address _currency,
+        address _router
     ) external onlyOwner {
-        address pool = IRouter(router).getPool(_currency);
-        IPool(pool).setRouter(router);
-        address poolRewards = IRouter(router).getPoolRewards(_currency);
-        IRewards(poolRewards).setRouter(router);
-        address parifiRewards = IRouter(router).getParifiRewards(_currency);
-        IRewards(parifiRewards).setRouter(router);
+        require(_router != address(0), "!router");
+        require(IRouter(_router).isSupportedCurrency(_currency), "!currency");
+        address pool = IRouter(_router).getPool(_currency);
+        IPool(pool).setRouter(_router);
+        address poolRewards = IRouter(_router).getPoolRewards(_currency);
+        IRewards(poolRewards).setRouter(_router);
+        address parifiRewards = IRouter(_router).getParifiRewards(_currency);
+        IRewards(parifiRewards).setRouter(_router);
         emit SetRouterForPoolAndRewards(pool, poolRewards, parifiRewards);
     }
 

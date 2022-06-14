@@ -18,6 +18,9 @@ describe("Testing the factory", async () => {
     [owner, user, parifi, darkOracle] = await ethers.getSigners();
 
     mockToken = await getMockToken();
+    mockToken2 = await getMockToken();
+    mockToken3 = await getMockToken();
+
     treasury = await getTreasury();
     trading = await getTrading();
     oracle = await getOracle();
@@ -130,9 +133,9 @@ describe("Testing the factory", async () => {
       });
 
       it("should check emit event in function setRouterForPoolAndRewards", async () => {
-        const currency = mockToken.address;
+        const currency = mockToken2.address;
         await factory.addToken(currency, 18, 100);
-        await expect(factory.setRouterForPoolAndRewards(currency))
+        await expect(factory.setRouterForPoolAndRewards(currency, router.address))
           .to.emit(factory, "SetRouterForPoolAndRewards")
           .withArgs(
             await router.getPool(currency),
@@ -143,9 +146,8 @@ describe("Testing the factory", async () => {
 
       it("should check call setRouterForPoolAndRewards only owner", async () => {
         const currency = mockToken.address;
-        await factory.addToken(currency, 18, 100);
         await expect(
-          factory.connect(user).setRouterForPoolAndRewards(currency)
+          factory.connect(user).setRouterForPoolAndRewards(currency, router.address)
         ).to.be.revertedWith("!owner");
       });
 
@@ -155,7 +157,7 @@ describe("Testing the factory", async () => {
         const maxParifi = ethers.constants.WeiPerEther;
         const withdrawFee = 535;
 
-        const currency = mockToken.address;
+        const currency = mockToken3.address;
         await factory.addToken(currency, 18, 100);
 
         await expect(
@@ -178,7 +180,6 @@ describe("Testing the factory", async () => {
 
       it("should check call setParamsPool only owner", async() => {
         const currency = mockToken.address;
-        await factory.addToken(currency, 18, 100);
         await expect(
           factory.connect(user).setParamsPool(currency, 0, 0, 0, 0)
         ).to.be.revertedWith("!owner");
