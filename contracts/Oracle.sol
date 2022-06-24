@@ -115,9 +115,7 @@ contract Oracle {
 		bool[] calldata directions,
 		uint256[] calldata prices
 	) external onlyDarkOracle {
-
 		for (uint256 i = 0; i < users.length; i++) {
-
 			address user = users[i];
 			address currency = currencies[i];
 			bytes32 productId = productIds[i];
@@ -134,11 +132,39 @@ contract Oracle {
 					reason
 				);
 			}
-
 		}
 
 		_tallyOracleRequests(users.length);
+	}
 
+	function settleLimits(
+		address[] calldata users,
+		bytes32[] calldata productIds,
+		address[] calldata currencies,
+		bool[] calldata directions,
+		uint256[] calldata prices
+	) external onlyDarkOracle {
+		for (uint256 i = 0; i < users.length; i++) {
+
+			address user = users[i];
+			address currency = currencies[i];
+			bytes32 productId = productIds[i];
+			bool isLong = directions[i];
+
+			try ITrading(trading).settleLimit(user, productId, currency, isLong, prices[i]) {
+
+			} catch Error(string memory reason) {
+				emit SettlementError(
+					user,
+					currency,
+					productId,
+					isLong,
+					reason
+				);
+			}
+		}
+
+		_tallyOracleRequests(users.length);
 	}
 
 	function liquidatePositions(
