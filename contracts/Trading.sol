@@ -402,7 +402,7 @@ contract Trading {
 		address currency,
 		bool isLong,
 		uint256 price
-	) external onlyOracle {
+	) public onlyOracle {
 
 		bytes32 key = _getPositionKey(user, productId, currency, isLong);
 
@@ -530,6 +530,35 @@ contract Trading {
 
 		return (margin, size, pnl);
 
+	}
+
+	function settleLimit(
+		address user,
+		bytes32 productId,
+		address currency,
+		bool isLong,
+		uint256 price
+	) external onlyOracle {
+
+		bytes32 key = _getPositionKey(user, productId, currency, isLong);
+		require(orders[key].size == 0, "orderExists");
+
+		Position memory position = positions[key];
+		require(positions[key].margin > 0, "!position");
+
+		Product storage product = products[productId];
+		uint64 fee = position.size * product.fee / 10**6;
+
+		require(position.margin >= fee, "feeTooLarge");
+		position.margin -= fee;
+
+		orders[key] = Order({
+			isClose: true,
+			size: position.size,
+			margin: position.margin
+		});
+
+		settleOrder(user, productId, currency, isLong, price);
 	}
 
 	// Liquidate positionIds (oracle)
