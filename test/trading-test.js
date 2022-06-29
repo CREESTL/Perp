@@ -346,18 +346,36 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     ).to.not.be.reverted;
   });
 
-  it("should check that emit ClosePosition", async () => {
-    await expect(
-      oracle
-        .connect(darkOracle)
-        .settleLimits(
-          [user.address],
-          [productId],
-          [addressZero],
-          [isLong],
-          [take]
-        )
-    ).to.emit(trading, "ClosePosition");
+  it("should check that correct close position", async () => {
+    const positionBefore = await trading.getPosition(
+      user.address,
+      addressZero,
+      productId,
+      isLong
+    );
+    console.log(positionBefore);
+
+    // change
+    await oracle
+      .connect(darkOracle)
+      .settleLimits(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [take]
+      );
+    // get event
+    let res = await trading.queryFilter("ClosePosition");
+    console.log(res);
+
+    const positionAfter = await trading.getPosition(
+      user.address,
+      addressZero,
+      productId,
+      isLong
+    );
+    console.log(positionAfter);
   });
 
   it("should check emit event SettlementError if productid is invalid", async () => {
