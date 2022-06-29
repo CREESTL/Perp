@@ -321,4 +321,122 @@ describe("Testing new methods for setting take profit and stop loss", () => {
       )
     ).to.be.revertedWith("stopTooSmall");
   });
+
+  it("should check that function settleLimits can call only darkOracle", async () => {
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleLimits(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [take]
+        )
+    ).to.not.be.reverted;
+
+    await expect(
+      oracle.settleLimits(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [take]
+      )
+    ).to.be.revertedWith("!dark-oracle");
+  });
+
+  it("should check emit event SettlementError if productid is invalid", async () => {
+    const invalidProductId =
+      ethers.utils.formatBytes32String("invalid product");
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleLimits(
+          [user.address],
+          [invalidProductId],
+          [addressZero],
+          [isLong],
+          [take]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(
+        user.address,
+        addressZero,
+        invalidProductId,
+        isLong,
+        "!position"
+      );
+  });
+
+  it("should check emit event SettlementError if order exists", async () => {
+    const newProductId = ethers.utils.formatBytes32String("new product");
+    await trading.addProduct(newProductId, product);
+    await trading.connect(user).submitOrder(
+      newProductId,
+      addressZero,
+      isLong,
+      0, // ether is sent, so 0 is sent
+      size,
+      { value: margin }
+    );
+
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleLimits(
+          [user.address],
+          [newProductId],
+          [addressZero],
+          [isLong],
+          [take]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(user.address, addressZero, newProductId, isLong, "orderExists");
+  });
+
+  it("should check emit event SettlementError if fee too large", async () => {
+    const newProductId = ethers.utils.formatBytes32String("new product");
+    const newProduct = {
+      maxLeverage: 5000000000,
+      liquidationThreshold: 8000,
+      fee: 0,
+      interest: 535,
+    };
+    await trading.addProduct(newProductId, newProduct);
+    await trading.connect(user).submitOrder(
+      newProductId,
+      addressZero,
+      isLong,
+      0, // ether is sent, so 0 is sent
+      size,
+      {
+        value: ethers.utils.parseEther("1"),
+      }
+    );
+    // await oracle
+    //   .connect(darkOracle)
+    //   .settleOrders(
+    //     [user.address],
+    //     [newProductId],
+    //     [addressZero],
+    //     [isLong],
+    //     [100]
+    //   );
+    // await expect(
+    //   oracle
+    //     .connect(darkOracle)
+    //     .settleLimits(
+    //       [user.address],
+    //       [productId],
+    //       [addressZero],
+    //       [isLong],
+    //       [take]
+    //     )
+    // )
+    //   .to.emit(oracle, "SettlementError")
+    //   .withArgs(user.address, addressZero, productId, isLong, "!position");
+  });
 });
