@@ -18,6 +18,7 @@ const {
   stop,
   take,
 } = require("./utils.js");
+const PRICE = "100";
 
 describe("Testing new methods for setting take profit and stop loss", () => {
   let owner;
@@ -28,6 +29,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
   before(async () => {
     [owner, user, parifi, darkOracle] = await ethers.getSigners();
     key = getKey(user.address);
+    
   });
 
   beforeEach(async () => {
@@ -84,7 +86,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
         [productId],
         [addressZero],
         [isLong],
-        [100]
+        [PRICE]
       );
   });
 
@@ -212,7 +214,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
         [productId],
         [addressZero],
         [isLong],
-        [100]
+        [PRICE]
       );
     await expect(
       trading
@@ -236,7 +238,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
         [productId],
         [addressZero],
         [isLong],
-        [100]
+        [PRICE]
       );
     await expect(
       trading
@@ -328,60 +330,16 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     ).to.be.revertedWith("stopTooSmall");
   });
 
-  it("should check that function settleLimits can call only darkOracle", async () => {
+  it("should fail to call settleLimits because not darkOracle", async () => {
     await expect(
       oracle.settleLimits(
         [user.address],
         [productId],
         [addressZero],
         [isLong],
-        [take]
+        [PRICE]
       )
     ).to.be.revertedWith("!dark-oracle");
-
-    await expect(
-      oracle
-        .connect(darkOracle)
-        .settleLimits(
-          [user.address],
-          [productId],
-          [addressZero],
-          [isLong],
-          [take]
-        )
-    ).to.not.be.reverted;
-  });
-
-  it("should check that correct close position", async () => {
-    const positionBefore = await trading.getPosition(
-      user.address,
-      addressZero,
-      productId,
-      isLong
-    );
-    console.log(positionBefore);
-
-    // change
-    await oracle
-      .connect(darkOracle)
-      .settleLimits(
-        [user.address],
-        [productId],
-        [addressZero],
-        [isLong],
-        [take]
-      );
-    // get event
-    let res = await trading.queryFilter("ClosePosition");
-    console.log(res);
-
-    const positionAfter = await trading.getPosition(
-      user.address,
-      addressZero,
-      productId,
-      isLong
-    );
-    console.log(positionAfter);
   });
 
   it("should check emit event SettlementError if productid is invalid", async () => {
@@ -395,7 +353,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
           [invalidProductId],
           [addressZero],
           [isLong],
-          [take]
+          [PRICE]
         )
     )
       .to.emit(oracle, "SettlementError")
@@ -428,10 +386,46 @@ describe("Testing new methods for setting take profit and stop loss", () => {
           [newProductId],
           [addressZero],
           [isLong],
-          [take]
+          [PRICE]
         )
     )
       .to.emit(oracle, "SettlementError")
       .withArgs(user.address, addressZero, newProductId, isLong, "orderExists");
   });
+
+  it("should correctly settle limit", async() => {
+    const positionBefore = await trading.getPosition(
+      user.address,
+      addressZero,
+      productId,
+      isLong
+    );
+    const fee = positionBefore.size.mul(product.fee).div(10**6);
+
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleLimits(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [PRICE]
+        )
+    ).to.not.be.reverted;
+
+    let event = (await trading.queryFilter("ClosePosition"))[0].args;
+
+    expect(fee).to.be.equal(event.fee);
+    expect(positionBefore.margin).to.be.equal((event.margin).add(event.fee));
+
+    const positionAfter = await trading.getPosition(
+      user.address,
+      addressZero,
+      productId,
+      isLong
+    );
+
+    expect(positionAfter.size).to.be.equal(0);
+  })
 });
