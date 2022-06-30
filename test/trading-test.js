@@ -198,10 +198,13 @@ describe("Testing new methods for setting take profit and stop loss", () => {
   });
 
   it("should check that it is impossible to add a stop loss for a closed position", async () => {
+    const product = await trading.getProduct(productId);
+    const fee = size.mul(product.fee).mul(10**4); // Magic with decimals
+
     // close order
     await trading
       .connect(user)
-      .submitCloseOrder(productId, addressZero, isLong, size);
+      .submitCloseOrder(productId, addressZero, isLong, size, {value: fee});
     await oracle
       .connect(darkOracle)
       .settleOrders(
@@ -219,10 +222,13 @@ describe("Testing new methods for setting take profit and stop loss", () => {
   });
 
   it("should check that it is impossible to add a take profit for a closed position", async () => {
+    const product = await trading.getProduct(productId);
+    const fee = size.mul(product.fee).mul(10**4); // Magic with decimals
+
     // close order
     await trading
       .connect(user)
-      .submitCloseOrder(productId, addressZero, isLong, size);
+      .submitCloseOrder(productId, addressZero, isLong, size, {value: fee});
     await oracle
       .connect(darkOracle)
       .settleOrders(
