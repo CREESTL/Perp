@@ -29,7 +29,6 @@ describe("Testing new methods for setting take profit and stop loss", () => {
   before(async () => {
     [owner, user, parifi, darkOracle] = await ethers.getSigners();
     key = getKey(user.address);
-    
   });
 
   beforeEach(async () => {
@@ -201,12 +200,12 @@ describe("Testing new methods for setting take profit and stop loss", () => {
 
   it("should check that it is impossible to add a stop loss for a closed position", async () => {
     const product = await trading.getProduct(productId);
-    const fee = size.mul(product.fee).mul(10**4); // Magic with decimals
+    const fee = size.mul(product.fee).mul(10 ** 4); // Magic with decimals
 
     // close order
     await trading
       .connect(user)
-      .submitCloseOrder(productId, addressZero, isLong, size, {value: fee});
+      .submitCloseOrder(productId, addressZero, isLong, size, { value: fee });
     await oracle
       .connect(darkOracle)
       .settleOrders(
@@ -225,12 +224,12 @@ describe("Testing new methods for setting take profit and stop loss", () => {
 
   it("should check that it is impossible to add a take profit for a closed position", async () => {
     const product = await trading.getProduct(productId);
-    const fee = size.mul(product.fee).mul(10**4); // Magic with decimals
+    const fee = size.mul(product.fee).mul(10 ** 4); // Magic with decimals
 
     // close order
     await trading
       .connect(user)
-      .submitCloseOrder(productId, addressZero, isLong, size, {value: fee});
+      .submitCloseOrder(productId, addressZero, isLong, size, { value: fee });
     await oracle
       .connect(darkOracle)
       .settleOrders(
@@ -393,14 +392,14 @@ describe("Testing new methods for setting take profit and stop loss", () => {
       .withArgs(user.address, addressZero, newProductId, isLong, "orderExists");
   });
 
-  it("should correctly settle limit", async() => {
+  it("should correctly settle limit", async () => {
     const positionBefore = await trading.getPosition(
       user.address,
       addressZero,
       productId,
       isLong
     );
-    const fee = positionBefore.size.mul(product.fee).div(10**6);
+    const fee = positionBefore.size.mul(product.fee).div(10 ** 6);
 
     await expect(
       oracle
@@ -417,7 +416,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     let event = (await trading.queryFilter("ClosePosition"))[0].args;
 
     expect(fee).to.be.equal(event.fee);
-    expect(positionBefore.margin).to.be.equal((event.margin).add(event.fee));
+    expect(positionBefore.margin).to.be.equal(event.margin.add(event.fee));
 
     const positionAfter = await trading.getPosition(
       user.address,
@@ -427,5 +426,5 @@ describe("Testing new methods for setting take profit and stop loss", () => {
     );
 
     expect(positionAfter.size).to.be.equal(0);
-  })
+  });
 });
