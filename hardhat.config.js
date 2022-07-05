@@ -12,11 +12,17 @@
  ALCHEMY_ID = process.env.ALCHEMY_KEY
  ETHERSCAN_ID = process.env.ETHERSCAN_ID
  PRIVATE_KEY = process.env.PRIVATE_KEY
+ GOERLI_PRIVATE_KEY = process.env.GOERLI_PRIVATE_KEY
  
  module.exports = {
    networks: {
      hardhat: {
        allowUnlimitedContractSize: false
+     },
+     goerli: {
+      url: 'https://eth-goerli.g.alchemy.com/v2/' + ALCHEMY_ID,
+      gasPrice: 4000000000,
+      accounts: [`${GOERLI_PRIVATE_KEY}`]
      },
      rinkeby: {
        url: 'https://eth-rinkeby.alchemyapi.io/v2/' + ALCHEMY_ID,

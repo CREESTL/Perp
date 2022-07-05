@@ -1,5 +1,14 @@
 {
   "networks": {
+    "goerli": {
+      "mock": "0x86FECe791EB4dfD51413E485d0Ce087f01f170Af",
+      "treasury": "0x8535bc619Dde610AC6d79431499c61317Db76E34",
+      "trading": "0xb3f3dD4eccFFE9f97E61dBEA393B94F7CF06AF43",
+      "parifiPool": "0xeAc44582F53a08a61CA3866A6323A00502D3AE7e",
+      "oracle": "0x2be60343ED606CEf17275a8A89c1f28B6fd03C3c",
+      "factory": "0xbd101A6E1AdbA1AFeEda20Aa4ae91D5c93FE5863",
+      "router": "0x3715f56D34e1f3f8671080085F9fD7F47677582D"
+    },
     "rinkeby": {
       "mock": "0xBD8F316F7752d8e4618c4FC176196dEa61c3DCd8",
       "treasury": "0x20685Cb98594057a7d80386a5BcD8cabcD600B9a",
