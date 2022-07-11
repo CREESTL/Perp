@@ -1,0 +1,22 @@
+{
+  "networks": {
+    "rinkeby": {
+      "mock": "0xBD8F316F7752d8e4618c4FC176196dEa61c3DCd8",
+      "treasury": "0x20685Cb98594057a7d80386a5BcD8cabcD600B9a",
+      "trading": "0x32dA6FB78B7B413b109c6596206c8E279AA43E49",
+      "parifiPool": "0xa3a9ad24011eAd8A81698864DAf0b5760DC5219F",
+      "oracle": "0x29BE67AcBD593678973362d2B034254aD2f60A6C",
+      "factory": "0xCf8AF77bBC6fD4077B5dE224fd0CE777ae34C8d3",
+      "router": "0xa010178a55680b0167CE8bC454d46B214D4913BB"
+    },
+    "mainnet": {
+      "mock": "",
+      "treasury": "",
+      "trading": "",
+      "parifiPool": "",
+      "oracle": "",
+      "factory": "",
+      "router": ""
+    }
+  }
+}
