@@ -3,7 +3,6 @@ const { ethers } = require("hardhat");
 // address used for ether
 const addressZero = ethers.constants.AddressZero;
 
-
 // deploy contracts
 async function getFactory() {
   const factory = await (await ethers.getContractFactory("Factory")).deploy();
@@ -66,7 +65,7 @@ const productId = ethers.utils.formatBytes32String("1");
 const product = {
   maxLeverage: 5000000000,
   liquidationThreshold: 8000,
-  fee: 0,
+  fee: 500,
   interest: 535,
 };
 
@@ -75,7 +74,7 @@ const isLong = false;
 // margin size/leverage
 const margin = ethers.utils.parseEther("1");
 
-const size = ethers.BigNumber.from("5000000000");
+const size = ethers.BigNumber.from("4000000000");
 
 // keccak256(abi.encodePacked(user, productId, currency, isLong))
 function getKey(addr) {

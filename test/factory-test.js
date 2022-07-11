@@ -135,7 +135,9 @@ describe("Testing the factory", async () => {
       it("should check emit event in function setRouterForPoolAndRewards", async () => {
         const currency = mockToken2.address;
         await factory.addToken(currency, 18, 100);
-        await expect(factory.setRouterForPoolAndRewards(currency, router.address))
+        await expect(
+          factory.setRouterForPoolAndRewards(currency, router.address)
+        )
           .to.emit(factory, "SetRouterForPoolAndRewards")
           .withArgs(
             await router.getPool(currency),
@@ -147,7 +149,9 @@ describe("Testing the factory", async () => {
       it("should check call setRouterForPoolAndRewards only owner", async () => {
         const currency = mockToken.address;
         await expect(
-          factory.connect(user).setRouterForPoolAndRewards(currency, router.address)
+          factory
+            .connect(user)
+            .setRouterForPoolAndRewards(currency, router.address)
         ).to.be.revertedWith("!owner");
       });
 
@@ -171,33 +175,31 @@ describe("Testing the factory", async () => {
         )
           .to.emit(factory, "UpdateParams")
           .withArgs(
-            minDepositTime, 
+            minDepositTime,
             utilizationMultiplier,
             maxParifi,
             withdrawFee
           );
       });
 
-      it("should check call setParamsPool only owner", async() => {
+      it("should check call setParamsPool only owner", async () => {
         const currency = mockToken.address;
         await expect(
           factory.connect(user).setParamsPool(currency, 0, 0, 0, 0)
         ).to.be.revertedWith("!owner");
-      })
+      });
 
-      it("should revert call setParamsPool", async() => {
+      it("should revert call setParamsPool", async () => {
         const currency = mockToken.address;
-        await expect(
-          factory.connect(user).setParamsPool(currency, 0, 0, 0, 0)
-        ).to.be.reverted;
-      })
+        await expect(factory.connect(user).setParamsPool(currency, 0, 0, 0, 0))
+          .to.be.reverted;
+      });
 
-      it("should revert call setRouterForPoolAndRewards", async() => {
+      it("should revert call setRouterForPoolAndRewards", async () => {
         const currency = mockToken.address;
-        await expect(
-          factory.connect(user).setRouterForPoolAndRewards(currency)
-        ).to.be.reverted;
-      })
+        await expect(factory.connect(user).setRouterForPoolAndRewards(currency))
+          .to.be.reverted;
+      });
     });
   });
 });

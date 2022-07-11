@@ -18,13 +18,13 @@ interface IRouter {
 
     function currenciesLength() external view returns (uint256);
 
-    function getDecimals(address currency) external view returns(uint8);
+    function getDecimals(address currency) external view returns (uint8);
 
     function getPool(address currency) external view returns (address);
 
-    function getPoolShare(address currency) external view returns(uint256);
+    function getPoolShare(address currency) external view returns (uint256);
 
-    function getParifiShare(address currency) external view returns(uint256);
+    function getParifiShare(address currency) external view returns (uint256);
 
     function getPoolRewards(address currency) external view returns (address);
 
@@ -39,7 +39,7 @@ interface IRouter {
     function setCurrencies(address[] calldata _currencies) external;
 
     function setDecimals(address currency, uint8 _decimals) external;
-    
+
     function setPoolShare(address currency, uint256 share) external;
 
     function setParifiShare(address currency, uint256 share) external;
