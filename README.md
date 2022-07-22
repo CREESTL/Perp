@@ -32,6 +32,7 @@ To setup limit orders such as stop-loss and take-profit we created the next func
     - submitTakeOrder
     - settleStopOrder
     - settleTakeOrder
+    - settleLimit
 
 #### submitStopOrder
 
@@ -60,8 +61,13 @@ Event NewTakeOrder notifies the backend. Backend using darkOracle to call the fu
 #### settleStopOrder
 
 This function is used for the final setup of the stop-loss order, this function can be called only by oracle. Emits the PositionStopUpdated event at the end.
-settleTakeOrder
+
+#### settleTakeOrder
 This function is used for the final setup of the take-profit order, this function can be called only by oracle. Emits the PositionTakeUpdated event at the end.
+
+#### settleLimit
+
+This function closes position by request from oracle. Emits ClosePosition event. Intended use: limit handling.
 
 ##### These functions were added in the Oracle.sol smart contract:
 
@@ -70,6 +76,9 @@ This function is used for the final setup of the take-profit order, this functio
 
 These functions can be called only by darkOracle, they use interface of the Trading.sol smart contract to set up the stop-loss and take-profit orders through the settleStopOrder and settleTakeOrder functions of the Trading.sol smart contract.
 
+- settleLimits
+
+Uses settleLimits function from Trading.sol to close position when limit triggered. Called by darkOracle.
 
 ## Adding new currency
 
@@ -99,3 +108,14 @@ This function is needed to set the router for a specific token pool. After addin
 - uint256 withdrawFee
 
 The meaning of this function is similar to the one described above.
+
+
+## Product Explanation
+
+For trading constants we use Product struct. To create a product we use addProduct function, to change - updateProduct.
+
+A product contains this values:
+- uint64 maxLeverage
+- uint64 liquidationThreshold
+- uint64 fee
+- uint64 interest
