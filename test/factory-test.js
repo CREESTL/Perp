@@ -108,10 +108,10 @@ describe("Testing the factory", async () => {
         expect(await pool.rewards()).to.be.equal(poolRewards.address)
 
         expect(await poolRewards.trading()).to.be.equal(trading)
-        expext(await poolRewards.treasury()).to.be.equal(treasury)
+        expect(await poolRewards.treasury()).to.be.equal(treasury)
 
         expect(await parifiRewards.trading()).to.be.equal(trading)
-        expext(await parifiRewards.treasury()).to.be.equal(treasury)
+        expect(await parifiRewards.treasury()).to.be.equal(treasury)
       })
 
       it("should fail to add zero token", async () => {

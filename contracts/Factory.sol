@@ -77,6 +77,10 @@ contract Factory {
         IRouter(router).setParifiRewards(_currency, address(parifiRewards));
         IRouter(router).setParifiShare(_currency, _share);
 
+        pool.setRouter(router);
+        poolRewards.setRouter(router);
+        parifiRewards.setRouter(router);
+
         emit TokenAdded(
             _currency,
             address(pool),
