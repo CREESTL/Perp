@@ -542,7 +542,7 @@ contract Trading {
 
         price = _validatePrice(price);
 
-        int256 pnl = _getPnL(
+        int256 pnl = getPnL(
             isLong,
             price,
             position.price,
@@ -626,7 +626,7 @@ contract Trading {
 
         price = _validatePrice(price);
 
-        int256 pnl = _getPnL(
+        int256 pnl = getPnL(
             isLong,
             price,
             position.price,
@@ -769,58 +769,6 @@ contract Trading {
         return price * 10**(UNIT_DECIMALS - PRICE_DECIMALS);
     }
 
-    function _getPnL(
-        bool isLong,
-        uint256 price,
-        uint256 positionPrice,
-        uint256 size,
-        uint256 interest,
-        uint256 timestamp
-    ) public view returns (int256 _pnl) {
-        bool pnlIsNegative;
-        uint256 pnl;
-
-        if (isLong) {
-            if (price >= positionPrice) {
-                pnl = (size * (price - positionPrice)) / positionPrice;
-            } else {
-                pnl = (size * (positionPrice - price)) / positionPrice;
-                pnlIsNegative = true;
-            }
-        } else {
-            if (price > positionPrice) {
-                pnl = (size * (price - positionPrice)) / positionPrice;
-                pnlIsNegative = true;
-            } else {
-                pnl = (size * (positionPrice - price)) / positionPrice;
-            }
-        }
-
-        // Subtract interest from P/L
-        if (block.timestamp >= timestamp + 15 minutes) {
-            uint256 _interest = (size *
-                interest *
-                (block.timestamp - timestamp)) / (UNIT * 10**4 * 360 days);
-
-            if (pnlIsNegative) {
-                pnl += _interest;
-            } else if (pnl < _interest) {
-                pnl = _interest - pnl;
-                pnlIsNegative = true;
-            } else {
-                pnl -= _interest;
-            }
-        }
-
-        if (pnlIsNegative) {
-            _pnl = -1 * int256(pnl);
-        } else {
-            _pnl = int256(pnl);
-        }
-
-        return _pnl;
-    }
-
     // Getters
 
     function getProduct(bytes32 productId)
@@ -879,6 +827,58 @@ contract Trading {
 
     function getPendingFee(address currency) external view returns (uint256) {
         return pendingFees[currency] * 10**(18 - UNIT_DECIMALS);
+    }
+
+    function getPnL(
+        bool isLong,
+        uint256 price,
+        uint256 positionPrice,
+        uint256 size,
+        uint256 interest,
+        uint256 timestamp
+    ) public view returns (int256 _pnl) {
+        bool pnlIsNegative;
+        uint256 pnl;
+
+        if (isLong) {
+            if (price >= positionPrice) {
+                pnl = (size * (price - positionPrice)) / positionPrice;
+            } else {
+                pnl = (size * (positionPrice - price)) / positionPrice;
+                pnlIsNegative = true;
+            }
+        } else {
+            if (price > positionPrice) {
+                pnl = (size * (price - positionPrice)) / positionPrice;
+                pnlIsNegative = true;
+            } else {
+                pnl = (size * (positionPrice - price)) / positionPrice;
+            }
+        }
+
+        // Subtract interest from P/L
+        if (block.timestamp >= timestamp + 15 minutes) {
+            uint256 _interest = (size *
+                interest *
+                (block.timestamp - timestamp)) / (UNIT * 10**4 * 360 days);
+
+            if (pnlIsNegative) {
+                pnl += _interest;
+            } else if (pnl < _interest) {
+                pnl = _interest - pnl;
+                pnlIsNegative = true;
+            } else {
+                pnl -= _interest;
+            }
+        }
+
+        if (pnlIsNegative) {
+            _pnl = -1 * int256(pnl);
+        } else {
+            _pnl = int256(pnl);
+        }
+
+        return _pnl;
     }
 
     // Modifiers
