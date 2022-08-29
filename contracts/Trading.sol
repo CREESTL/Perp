@@ -776,7 +776,7 @@ contract Trading {
         uint256 size,
         uint256 interest,
         uint256 timestamp
-    ) internal view returns (int256 _pnl) {
+    ) public view returns (int256 _pnl) {
         bool pnlIsNegative;
         uint256 pnl;
 
