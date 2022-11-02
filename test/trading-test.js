@@ -4,6 +4,7 @@ const {
   getFactory,
   getPool,
   getRouter,
+  getMockToken,
   getPoolParifi,
   getTrading,
   getTreasury,
@@ -27,7 +28,8 @@ describe("Testing new methods for setting take profit and stop loss", () => {
   let darkOracle;
 
   before(async () => {
-    [owner, user, parifi, darkOracle] = await ethers.getSigners();
+    [owner, user, darkOracle] = await ethers.getSigners();
+    parifi = await getMockToken();
     key = getKey(user.address);
   });
 
@@ -67,6 +69,8 @@ describe("Testing new methods for setting take profit and stop loss", () => {
 
     await trading.addProduct(productId, product);
 
+    await poolParifi.setRouter(router.address);
+
     // create order
     await trading.connect(user).submitOrder(
       productId,
@@ -88,6 +92,14 @@ describe("Testing new methods for setting take profit and stop loss", () => {
         [PRICE]
       );
   });
+
+  it("should deposit to parifi pool", async () => {
+    await parifi.mint('1000000000000000000');
+    console.log(await parifi.balanceOf(owner.address));
+    await parifi.increaseAllowance(poolParifi.address, '1000000000000000000');
+    console.log(await parifi.allowance(owner.address, poolParifi.address));
+    await poolParifi.deposit('1000000000000000000');
+  })
 
   it("should check emit NewStopOrder event in method submitStopOrder", async () => {
     await expect(
