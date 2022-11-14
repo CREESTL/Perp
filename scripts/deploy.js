@@ -68,9 +68,9 @@ async function main() {
   await factory.setRouter(router.address);
 
   // only for tests. REMOVE FOR DEPLOY IN MAINNET
-  const productId = ethers.utils.formatBytes32String("0")
-  const product = [5000000000, 8000, 0, 535]
-  await trading.addProduct(productId, product)
+  const productId = ethers.utils.formatBytes32String("0");
+  const product = [5000000000, 8000, 0, 535];
+  await trading.addProduct(productId, product);
 
   console.log("Configuration finished");
   console.log("Wait for verification, please");
@@ -120,7 +120,9 @@ async function main() {
     console.error(error);
   }
 
-  console.log("Verification finished. Addresses in ./deployedContractsOutput.json");
+  console.log(
+    "Verification finished. Addresses in ./deployedContractsOutput.json"
+  );
 }
 
 main()

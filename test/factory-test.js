@@ -97,22 +97,31 @@ describe("Testing the factory", async () => {
       });
 
       it("should successfully initialize token's contracts", async () => {
-        let pool = await ethers.getContractAt("Pool", await router.getPool(mockToken.address))
-        let poolRewards = await ethers.getContractAt("Rewards", await router.getPoolRewards(mockToken.address))
-        let parifiRewards = await ethers.getContractAt("Rewards", await router.getParifiRewards(mockToken.address))
+        let pool = await ethers.getContractAt(
+          "Pool",
+          await router.getPool(mockToken.address)
+        );
+        let poolRewards = await ethers.getContractAt(
+          "Rewards",
+          await router.getPoolRewards(mockToken.address)
+        );
+        let parifiRewards = await ethers.getContractAt(
+          "Rewards",
+          await router.getParifiRewards(mockToken.address)
+        );
 
-        let trading = await router.trading()
-        let treasury = await router.treasury()
+        let trading = await router.trading();
+        let treasury = await router.treasury();
 
-        expect(await pool.trading()).to.be.equal(trading)
-        expect(await pool.rewards()).to.be.equal(poolRewards.address)
+        expect(await pool.trading()).to.be.equal(trading);
+        expect(await pool.rewards()).to.be.equal(poolRewards.address);
 
-        expect(await poolRewards.trading()).to.be.equal(trading)
-        expect(await poolRewards.treasury()).to.be.equal(treasury)
+        expect(await poolRewards.trading()).to.be.equal(trading);
+        expect(await poolRewards.treasury()).to.be.equal(treasury);
 
-        expect(await parifiRewards.trading()).to.be.equal(trading)
-        expect(await parifiRewards.treasury()).to.be.equal(treasury)
-      })
+        expect(await parifiRewards.trading()).to.be.equal(trading);
+        expect(await parifiRewards.treasury()).to.be.equal(treasury);
+      });
 
       it("should fail to add zero token", async () => {
         await expect(factory.addToken(addressZero, 18, 100)).to.be.revertedWith(

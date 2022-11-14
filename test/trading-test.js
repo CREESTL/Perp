@@ -94,12 +94,10 @@ describe("Testing new methods for setting take profit and stop loss", () => {
   });
 
   it("should deposit to parifi pool", async () => {
-    await parifi.mint('1000000000000000000');
-    console.log(await parifi.balanceOf(owner.address));
-    await parifi.increaseAllowance(poolParifi.address, '1000000000000000000');
-    console.log(await parifi.allowance(owner.address, poolParifi.address));
-    await poolParifi.deposit('1000000000000000000');
-  })
+    await parifi.mint("1000000000000000000");
+    await parifi.increaseAllowance(poolParifi.address, "1000000000000000000");
+    await poolParifi.deposit("1000000000000000000");
+  });
 
   it("should check emit NewStopOrder event in method submitStopOrder", async () => {
     await expect(
@@ -298,47 +296,124 @@ describe("Testing new methods for setting take profit and stop loss", () => {
       );
   });
 
-  it("should check that it is impossible to set Take if it is too small", async () => {
-    await oracle.connect(darkOracle).settleStopOrders(
-      [user.address],
-      [productId],
-      [addressZero],
-      [isLong],
-      [stop * 1000] // stop > take
-    );
+  it("should fail to set stop when it's too big", async () => {
+    await expect(
+      trading
+        .connect(user)
+        .submitStopOrder(productId, addressZero, isLong, PRICE + 1)
+    ).to.be.revertedWith("stopTooBig");
+
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleStopOrders(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [PRICE + 1]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(user.address, addressZero, productId, isLong, "stopTooBig");
+  });
+
+  it("should fail to set take when it's too small", async () => {
+    await expect(
+      trading
+        .connect(user)
+        .submitTakeOrder(productId, addressZero, isLong, PRICE - 1)
+    ).to.be.revertedWith("takeTooSmall");
+
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleTakeOrders(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [PRICE - 1]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(user.address, addressZero, productId, isLong, "takeTooSmall");
+  });
+
+  it("should check that it is impossible to set Take if Stop already set", async () => {
+    await oracle
+      .connect(darkOracle)
+      .settleStopOrders(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [stop]
+      );
 
     await expect(
       trading
         .connect(user)
         .submitTakeOrder(productId, addressZero, isLong, take)
-    ).to.be.revertedWith("takeTooSmall");
+    ).to.be.revertedWith("Stop loss already set");
+
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleTakeOrders(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [take]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(
+        user.address,
+        addressZero,
+        productId,
+        isLong,
+        "Stop loss already set"
+      );
   });
 
-  it("should check that it is impossible to set Stop if it is too big", async () => {
-    await oracle.connect(darkOracle).settleTakeOrders(
-      [user.address],
-      [productId],
-      [addressZero],
-      [isLong],
-      [stop] // stop > take
-    );
+  it("should check that it is impossible to set Stop if Take already set", async () => {
+    await oracle
+      .connect(darkOracle)
+      .settleTakeOrders(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [take]
+      );
 
     await expect(
       trading
         .connect(user)
-        .submitStopOrder(productId, addressZero, isLong, stop * 10000)
-    ).to.be.revertedWith("stopTooBig");
-  });
+        .submitStopOrder(productId, addressZero, isLong, stop)
+    ).to.be.revertedWith("Take profit already set");
 
-  it("should check that the Stop cant be less than 100% minus the liquidation threshold", async () => {
     await expect(
-      trading.connect(user).submitStopOrder(
-        productId,
+      oracle
+        .connect(darkOracle)
+        .settleStopOrders(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [stop]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(
+        user.address,
         addressZero,
+        productId,
         isLong,
-        1 // stop too small
-      )
-    ).to.be.revertedWith("stopTooSmall");
+        "Take profit already set"
+      );
   });
 
   it("should fail to call settleLimits because not darkOracle", async () => {
@@ -364,7 +439,7 @@ describe("Testing new methods for setting take profit and stop loss", () => {
           [invalidProductId],
           [addressZero],
           [isLong],
-          [PRICE]
+          [take]
         )
     )
       .to.emit(oracle, "SettlementError")
@@ -404,14 +479,16 @@ describe("Testing new methods for setting take profit and stop loss", () => {
       .withArgs(user.address, addressZero, newProductId, isLong, "orderExists");
   });
 
-  it("should correctly settle limit", async () => {
-    const positionBefore = await trading.getPosition(
-      user.address,
-      addressZero,
-      productId,
-      isLong
-    );
-    const fee = positionBefore.size.mul(product.fee).div(10 ** 6);
+  it("should fail if price do not trigger stop", async () => {
+    await oracle
+      .connect(darkOracle)
+      .settleStopOrders(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [stop]
+      );
 
     await expect(
       oracle
@@ -423,7 +500,81 @@ describe("Testing new methods for setting take profit and stop loss", () => {
           [isLong],
           [PRICE]
         )
-    ).to.not.be.reverted;
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(user.address, addressZero, productId, isLong, "!limit");
+  });
+
+  it("should fail if price do not trigger take", async () => {
+    // Take not set yet
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleLimits(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [PRICE]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(user.address, addressZero, productId, isLong, "!limit");
+
+    await oracle
+      .connect(darkOracle)
+      .settleTakeOrders(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [take]
+      );
+
+    await expect(
+      oracle
+        .connect(darkOracle)
+        .settleLimits(
+          [user.address],
+          [productId],
+          [addressZero],
+          [isLong],
+          [PRICE]
+        )
+    )
+      .to.emit(oracle, "SettlementError")
+      .withArgs(user.address, addressZero, productId, isLong, "!limit");
+  });
+
+  it("should successfully settle limit", async () => {
+    const positionBefore = await trading.getPosition(
+      user.address,
+      addressZero,
+      productId,
+      isLong
+    );
+    const fee = positionBefore.size.mul(product.fee).div(10 ** 6);
+
+    // Need to set limit before it will be triggered
+    await oracle
+      .connect(darkOracle)
+      .settleTakeOrders(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [take]
+      );
+
+    await oracle
+      .connect(darkOracle)
+      .settleLimits(
+        [user.address],
+        [productId],
+        [addressZero],
+        [isLong],
+        [take]
+      );
 
     let event = (await trading.queryFilter("ClosePosition"))[0].args;
 

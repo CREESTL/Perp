@@ -85,8 +85,8 @@ function getKey(addr) {
   return key;
 }
 
-const stop = 100;
-const take = 1000;
+const stop = 90;
+const take = 110;
 
 module.exports = {
   getFactory,
