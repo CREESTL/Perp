@@ -1,38 +1,47 @@
 ### Requirements
-* NodeJS 16.10.0 or later
-* npm 8.1.0 or later 
-* hardhat 2.8.3 or later
+
+- NodeJS 16.10.0 or later
+- npm 8.1.0 or later
+- hardhat 2.8.3 or later
+
 ### Installation
-* npm i
+
+- npm i
+
 ### Run tests
-* npx hardhat test
+
+- npx hardhat test
+
 ### Run tests with coverage report
-* npx hardhat coverage
-### Deploy and verification 
+
+- npx hardhat coverage
+
+### Deploy and verification
 
 You need to create an .env file and enter your data into it, as indicated in .env.example
 
-* npx hardhat run scripts/deploy.js --network "your-network"
+- npx hardhat run scripts/deploy.js --network "your-network"
 
 ### Addresses of deployed contracts can be seen in /scripts/deployedContractsOutput.json
 
 ## Description of how limit orders work
 
 To setup limit orders such as stop-loss and take-profit we created the next functionality:
+
 1. Added events in the Trading.sol smart contract:
 
-    - NewStopOrder
-    - NewTakeOrder
-    - PositionStopUpdated
-    - PositionTakeUpdated
+   - NewStopOrder
+   - NewTakeOrder
+   - PositionStopUpdated
+   - PositionTakeUpdated
 
 2. Added functions in the Trading.sol smart contract:
 
-    - submitStopOrder
-    - submitTakeOrder
-    - settleStopOrder
-    - settleTakeOrder
-    - settleLimit
+   - submitStopOrder
+   - submitTakeOrder
+   - settleStopOrder
+   - settleTakeOrder
+   - settleLimit
 
 #### submitStopOrder
 
@@ -43,10 +52,10 @@ To set up stop-loss a user needs to call the submitStopOrder function with next 
 - bool isLong
 - uint64 stop
 
-This function takes a position (calculates from transfered data) and checks if this position exists. Also checks if the stop argument is in the correct range. If everything is ended correctly, this function returns NewStopOrder event.
+This function takes a position (calculates from transferred data) and checks if this position exists. Also checks if the stop argument is in the correct range. If everything is ended correctly, this function returns NewStopOrder event.
 Event NewStopOrder notifies the backend. Backend using darkOracle to call the function settleStopOrder Oracle.sol, that will end setting up the order. Final event PositionStopUpdated message backend that stop-loss has set up.
 
-#### submitTakeOrder 
+#### submitTakeOrder
 
 To set up stop-loss a user needs to call the submitStopOrder function with next parameters:
 
@@ -55,7 +64,7 @@ To set up stop-loss a user needs to call the submitStopOrder function with next 
 - bool isLong
 - uint64 take
 
-This function takes a position (calculates from transfered data) and checks if this position exists. Also checks if the take argument is in the correct range. If everything is ended correctly, this function returns NewTakeOrder event.
+This function takes a position (calculates from transferred data) and checks if this position exists. Also checks if the take argument is in the correct range. If everything is ended correctly, this function returns NewTakeOrder event.
 Event NewTakeOrder notifies the backend. Backend using darkOracle to call the function settleTakeOrder Oracle.sol, that will end setting up the order. Final event PositionTakeUpdated message backend that take-profit has set up.
 
 #### settleStopOrder
@@ -63,6 +72,7 @@ Event NewTakeOrder notifies the backend. Backend using darkOracle to call the fu
 This function is used for the final setup of the stop-loss order, this function can be called only by oracle. Emits the PositionStopUpdated event at the end.
 
 #### settleTakeOrder
+
 This function is used for the final setup of the take-profit order, this function can be called only by oracle. Emits the PositionTakeUpdated event at the end.
 
 #### settleLimit
@@ -109,12 +119,12 @@ This function is needed to set the router for a specific token pool. After addin
 
 The meaning of this function is similar to the one described above.
 
-
 ## Product Explanation
 
 For trading constants we use Product struct. To create a product we use addProduct function, to change - updateProduct.
 
 A product contains this values:
+
 - uint64 maxLeverage
 - uint64 liquidationThreshold
 - uint64 fee
